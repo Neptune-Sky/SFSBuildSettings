@@ -19,3 +19,6 @@ This is a very early version of the mod, and more will be released very soon. St
 2. Use the "Open Mods Folder" button in-game. 
 3. Drag and drop the DLL.
 4. Restart the game.
+
+
+**This mod is untested on Mac.** Use at your own risk.
