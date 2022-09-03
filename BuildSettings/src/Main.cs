@@ -29,7 +29,11 @@ namespace BuildSettings
 
         public override void Load()
         {
-            SceneHelper.OnBuildSceneLoaded += () => Settings.inst.ShowGUI();
+            SceneHelper.OnBuildSceneLoaded += () =>
+            {
+                Settings.inst.ShowGUI();
+                SkinUnlocker.UnlockSkins();
+            };
         }
     }
 }

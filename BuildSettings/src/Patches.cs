@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using HarmonyLib;
 using SFS.Builds;
 using SFS.Parts.Modules;
@@ -106,6 +107,28 @@ namespace BuildSettings
                 rotation = (float)Settings.rotationData.currentVal;
             }
 
+        }
+    }
+
+    // Makes it so that the outline width for parts shrinks as the camera gets closer
+    // Courtesy of Infinity's RandomTweaks
+    [HarmonyPatch(typeof(BuildSelector), nameof(BuildSelector.DrawRegionalOutline))]
+    public static class SetOutlineWidth
+    {
+        [HarmonyPrefix]
+        public static void DrawRegionalOutline(List<PolygonData> polygons, bool symmetry, Color color, ref float width, float depth = 1f)
+        {
+            float cameraDistance = BuildManager.main.buildCamera.CameraDistance;
+            float newWidth = (width * (cameraDistance * 0.12f));
+            width = Math.Min(newWidth, 0.1f);
+        }
+    }
+    [HarmonyPatch(typeof(DevSettings), nameof(DevSettings.FullVersion), MethodType.Getter)]
+    static class FullVerToggle
+    {
+        static void Prefix(ref bool __result)
+        {
+            __result = false;
         }
     }
 }
