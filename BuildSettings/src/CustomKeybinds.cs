@@ -1,4 +1,5 @@
-﻿using ModLoader;
+﻿/*
+using ModLoader;
 using UnityEngine;
 using static SFS.Input.KeybindingsPC;
 
@@ -20,3 +21,4 @@ namespace BuildSettings
         }
     }
 }
+*/

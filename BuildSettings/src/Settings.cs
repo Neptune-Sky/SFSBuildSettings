@@ -156,6 +156,7 @@ namespace BuildSettings
             return data;
         }
 
+        /*
         Vector2 ClampWindow()
         {
             Vector2 pos = window.Position;
@@ -164,17 +165,13 @@ namespace BuildSettings
             return pos;
         }
 
+
         void Update()
         {
             if (windowObj == null) return;
-            // space.Size.Set(Mathf.Clamp(100 - 10 * gridSnapData.textInput.Text.Length, 0, 70), 0);
+            space.Size.Set(Mathf.Clamp(100 - 10 * gridSnapData.textInput.Text.Length, 0, 70), 0);
             gridSnapData.textInput.Size.Set(Mathf.Clamp(70 + 10 * gridSnapData.textInput.Text.Length, 80, 200), 45);
         }
-
-        void OnGUI ()
-        {
-            GUILayout.Label(gridSnapData.currentVal.ToString());
-            GUILayout.Label(rotationData.currentVal.ToString());
-        }
+        */
     }
 }
