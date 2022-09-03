@@ -2,6 +2,8 @@
 Source code for Build Settings mod.
 
 If you use any portion of this code for your mods, please credit me.
+
+Credit to [Cucumber Space](https://github.com/cucumber-sp) for a few of the patches used.
 # What does this mod do?
 This mod is meant to port forward features from [Cucumber's Build Upgrade](https://github.com/cucumber-sp/SFSBuildUpgrade) that are missing from his new Part Editor mod, and also add more stuff on top such as things from [Infinity's RandomTweaks](https://github.com/4JX/RandomTweaks/tree/main/RandomTweaks).
 
