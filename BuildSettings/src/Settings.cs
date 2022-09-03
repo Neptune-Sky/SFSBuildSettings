@@ -64,7 +64,7 @@ namespace BuildSettings
             windowObj = Builder.CreateHolder(Builder.SceneToAttach.CurrentScene, "Build Settings");
             windowObj.transform.position = new Vector3(0, 0, 0);
 
-            window = Builder.CreateWindow(windowObj.transform, MainWindowID, 375, 400, 300, 300, true, true, 0.95f, "Build Settings");
+            window = Builder.CreateWindow(windowObj.transform, MainWindowID, 375, 400, 300, 400, true, true, 0.95f, "Build Settings");
 
             window.CreateLayoutGroup(Type.Vertical);
 
@@ -108,7 +108,6 @@ namespace BuildSettings
         }
         void MakeNumber(string text)
         {
-            Debug.Log(text);
             gridSnapData = Numberify(gridSnapData);
             rotationData = Numberify(rotationData);
         }
