@@ -12,8 +12,8 @@ namespace BuildSettings
         public override string DisplayName => "Build Settings";
         public override string Author => "ASoD";
         public override string MinimumGameVersionNecessary => "1.5.7";
-        public override string ModVersion => "v1.0";
-        public override string Description => "";
+        public override string ModVersion => "v1.1";
+        public override string Description => "Build settings window and various changes to build mode. See the GitHub repository for a full list of features.";
 
         public static GameObject settings;
         public static Harmony patcher;
