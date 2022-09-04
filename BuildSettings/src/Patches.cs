@@ -123,4 +123,14 @@ namespace BuildSettings
             width = Math.Min(newWidth, 0.1f);
         }
     }
+    [HarmonyPatch(typeof(BuildManager), "Awake")]
+    public static class PatchZoomLimits
+    {
+        [HarmonyPrefix]
+        public static void Prefix(ref BuildManager __instance)
+        {
+            __instance.buildCamera.maxCameraDistance = 300;
+            __instance.buildCamera.minCameraDistance = 0.1f;
+        }
+    }
 }

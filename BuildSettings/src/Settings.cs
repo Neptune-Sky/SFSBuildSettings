@@ -45,6 +45,7 @@ namespace BuildSettings
             inst = this;
             gridSnapData = CreateData(0.5, 0.0001, 99999);
             rotationData = CreateData(90, 0.0001, 99999);
+            if (minimized) window.Position = new Vector2(window.Position.x, window.Position.y - 350);
         }
 
         NumberInput CreateData(double defaultVal, double min, double max)
@@ -70,7 +71,7 @@ namespace BuildSettings
             rectTransform.sizeDelta = Vector2.zero;
             rectTransform.position = Vector2.zero;
 
-            window = Builder.CreateWindow(windowHolder.transform, MainWindowID, 375, 400, 300, 400, true, true, 0.95f, "Build Settings");
+            window = Builder.CreateWindow(windowHolder.transform, MainWindowID, 375, minimized ? 50 : 400 , 300, 400, true, true, 0.95f, "Build Settings");
 
             window.CreateLayoutGroup(Type.Vertical);
 
@@ -106,6 +107,7 @@ namespace BuildSettings
         void Minimize()
         {
             minimized = !minimized;
+
             if (!minimized)
             {
                 window.Size = new Vector2(375, 400);
