@@ -123,12 +123,4 @@ namespace BuildSettings
             width = Math.Min(newWidth, 0.1f);
         }
     }
-    [HarmonyPatch(typeof(DevSettings), nameof(DevSettings.FullVersion), MethodType.Getter)]
-    static class FullVerToggle
-    {
-        static void Prefix(ref bool __result)
-        {
-            __result = false;
-        }
-    }
 }

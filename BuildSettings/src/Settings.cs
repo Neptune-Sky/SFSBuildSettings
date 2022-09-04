@@ -6,7 +6,7 @@ using Type = SFS.UI.ModGUI.Type;
 
 namespace BuildSettings
 {
-    public class InputData
+    public class NumberInput
     {
         public TextInput textInput;
         public string oldText;
@@ -18,17 +18,19 @@ namespace BuildSettings
 
     public class Settings : MonoBehaviour
     {
-        public static GameObject windowObj;
+        public static GameObject windowHolder;
         public static Vector2 gameSize;
         public static Settings inst;
 
         static readonly int MainWindowID = Builder.GetRandomID();
         static Window window;
+        static bool minimized;
+        static ButtonWithLabel minButton;
 
         public static ToggleWithLabel snapToggle;
         public static ToggleWithLabel adaptToggle;
-        public static InputData gridSnapData;
-        public static InputData rotationData;
+        public static NumberInput gridSnapData;
+        public static NumberInput rotationData;
 
         public static bool snapping;
         public static bool noAdaptation;
@@ -45,9 +47,9 @@ namespace BuildSettings
             rotationData = CreateData(90, 0.0001, 99999);
         }
 
-        InputData CreateData(double defaultVal, double min, double max)
+        NumberInput CreateData(double defaultVal, double min, double max)
         {
-            InputData ToReturn = new InputData
+            NumberInput ToReturn = new NumberInput
             {
                 textInput = new TextInput(),
                 oldText = defaultVal.ToString(),
@@ -61,13 +63,18 @@ namespace BuildSettings
 
         public void ShowGUI()
         {
-            windowObj = Builder.CreateHolder(Builder.SceneToAttach.CurrentScene, "Build Settings");
-            windowObj.transform.position = new Vector3(0, 0, 0);
+            windowHolder = Builder.CreateHolder(Builder.SceneToAttach.CurrentScene, "Build Settings");
+            var rectTransform = windowHolder.AddComponent<RectTransform>();
+            rectTransform.anchorMin = Vector2.zero;
+            rectTransform.anchorMax = Vector2.zero;
+            rectTransform.sizeDelta = Vector2.zero;
+            rectTransform.position = Vector2.zero;
 
-            window = Builder.CreateWindow(windowObj.transform, MainWindowID, 375, 400, 300, 400, true, true, 0.95f, "Build Settings");
+            window = Builder.CreateWindow(windowHolder.transform, MainWindowID, 375, 400, 300, 400, true, true, 0.95f, "Build Settings");
 
             window.CreateLayoutGroup(Type.Vertical);
 
+            minButton = Builder.CreateButtonWithLabel(window.gameObject.transform, 40, 30, -175, -25, "", "-", Minimize);
             // window.WindowColor = new Color(0.1f, 0.5f, 0.1f);
 
             Builder.CreateSpace(window, 0, 0);
@@ -92,9 +99,33 @@ namespace BuildSettings
             rotationData.textInput = Builder.CreateTextInput(rotationContainer, 90, 50, 0, 0, rotationData.defaultVal.ToString(), MakeNumber);
 
             Builder.CreateButton(window, 325, 40, 0, 0, Defaults, "Defaults");
+
+            // window.gameObject.transform.localScale = new Vector3(0.8f, 0.8f, 1f);
         }
 
-
+        void Minimize()
+        {
+            minimized = !minimized;
+            if (!minimized)
+            {
+                window.Size = new Vector2(375, 400);
+                if (window.Position.y < gameSize.y / 3)
+                {
+                    window.Position = new Vector2(window.Position.x, window.Position.y + 350);
+                }
+                minButton.button.Text = "-";
+            }
+            else
+            {
+                window.Size = new Vector2(375, 50);
+                if (window.Position.y < gameSize.y / 3)
+                {
+                    window.Position = new Vector2(window.Position.x, window.Position.y - 350);
+                }
+                minButton.button.Text = "+";
+            }
+            minButton.Position = new Vector2(-175, -25);
+        }
         void Defaults()
         {
             snapping = false;
@@ -112,7 +143,7 @@ namespace BuildSettings
             rotationData = Numberify(rotationData);
         }
 
-        InputData Numberify(InputData data)
+        NumberInput Numberify(NumberInput data)
         {
             try
             {
@@ -155,22 +186,24 @@ namespace BuildSettings
             return data;
         }
 
-        /*
+
         Vector2 ClampWindow()
         {
+            gameSize = new Vector2((windowHolder.GetComponentInParent<CanvasScaler>().referenceResolution.y / Screen.height) * Screen.width, windowHolder.GetComponentInParent<CanvasScaler>().referenceResolution.y);
+
             Vector2 pos = window.Position;
-            Mathf.Clamp(pos.x, 0 + window.Size.x / 2, gameSize.x - window.Size.x / 2);
-            Mathf.Clamp(pos.y, 0 + window.Size.y / 2, gameSize.y - window.Size.y / 2);
+            pos.x = Mathf.Clamp(pos.x, window.Size.x / 2, gameSize.x - window.Size.x / 2);
+            pos.y = Mathf.Clamp(pos.y, window.Size.y, gameSize.y);
             return pos;
         }
 
 
         void Update()
         {
-            if (windowObj == null) return;
-            space.Size.Set(Mathf.Clamp(100 - 10 * gridSnapData.textInput.Text.Length, 0, 70), 0);
-            gridSnapData.textInput.Size.Set(Mathf.Clamp(70 + 10 * gridSnapData.textInput.Text.Length, 80, 200), 45);
+            // gameSize = windowObj.GetComponentInParent<CanvasScaler>().referenceResolution;
+            if (windowHolder == null) return;
+            window.Position = ClampWindow();
+            // gridSnapData.textInput.Size = new Vector2(Mathf.Clamp(70 + 10 * gridSnapData.textInput.Text.Length, 80, 200), 45);
         }
-        */
     }
 }
