@@ -15,7 +15,7 @@ Current features are:
 - Shrink part outlines as you zoom in
 - Greatly increased limits for zoom-in and zoom-out
 
-This is a very early version of the mod, and more will be released very soon. Stay tuned.
+This is an early version of the mod, and more will be released very soon. Stay tuned.
 
 ![UI](https://github.com/Neptune-Sky/SFSBuildSettings/blob/main/Images/UI.png?raw=true)
 
