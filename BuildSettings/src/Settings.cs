@@ -45,7 +45,7 @@ namespace BuildSettings
             inst = this;
             gridSnapData = CreateData(0.5, 0.0001, 99999);
             rotationData = CreateData(90, 0.0001, 99999);
-            if (minimized) window.Position = new Vector2(window.Position.x, window.Position.y - 350);
+
         }
 
         NumberInput CreateData(double defaultVal, double min, double max)
@@ -53,7 +53,7 @@ namespace BuildSettings
             NumberInput ToReturn = new NumberInput
             {
                 textInput = new TextInput(),
-                oldText = defaultVal.ToString(),
+                oldText = defaultVal.ToString(CultureInfo.InvariantCulture),
                 defaultVal = defaultVal,
                 currentVal = defaultVal,
                 min = min,
@@ -73,9 +73,11 @@ namespace BuildSettings
 
             window = Builder.CreateWindow(windowHolder.transform, MainWindowID, 375, minimized ? 50 : 400 , 300, 400, true, true, 0.95f, "Build Settings");
 
+            // if (minimized) window.Position = new Vector2(window.Position.x, window.Position.y - 350);
+
             window.CreateLayoutGroup(Type.Vertical);
 
-            minButton = Builder.CreateButtonWithLabel(window.gameObject.transform, 40, 30, -175, -25, "", "-", Minimize);
+            minButton = Builder.CreateButtonWithLabel(window.gameObject.transform, 40, 30, -175, -25, "", minimized ? "+" : "-", Minimize);
             // window.WindowColor = new Color(0.1f, 0.5f, 0.1f);
 
             Builder.CreateSpace(window, 0, 0);
@@ -90,14 +92,14 @@ namespace BuildSettings
 
             var gridLabel = Builder.CreateLabel(gridSnapContainer, 200, 35, 0, 0, "Grid Snap");
             Builder.CreateSpace(gridSnapContainer, 20, 0);
-            gridSnapData.textInput = Builder.CreateTextInput(gridSnapContainer, 90, 50, 0, 0, gridSnapData.defaultVal.ToString(), MakeNumber);
+            gridSnapData.textInput = Builder.CreateTextInput(gridSnapContainer, 90, 50, 0, 0, gridSnapData.defaultVal.ToString(CultureInfo.InvariantCulture), MakeNumber);
 
             Container rotationContainer = Builder.CreateContainer(box);
             rotationContainer.CreateLayoutGroup(Type.Horizontal, spacing: 10f);
 
             Builder.CreateLabel(rotationContainer, 200, 35, 0, 0, "Rotation Degrees");
             Builder.CreateSpace(rotationContainer, 20, 0);
-            rotationData.textInput = Builder.CreateTextInput(rotationContainer, 90, 50, 0, 0, rotationData.defaultVal.ToString(), MakeNumber);
+            rotationData.textInput = Builder.CreateTextInput(rotationContainer, 90, 50, 0, 0, rotationData.defaultVal.ToString(CultureInfo.InvariantCulture), MakeNumber);
 
             Builder.CreateButton(window, 325, 40, 0, 0, Defaults, "Defaults");
 
@@ -135,9 +137,9 @@ namespace BuildSettings
             snapToggle.toggle.toggleButton.UpdateUI(false); 
             adaptToggle.toggle.toggleButton.UpdateUI(false);
             gridSnapData.currentVal = gridSnapData.defaultVal;
-            gridSnapData.textInput.Text = gridSnapData.defaultVal.ToString();
+            gridSnapData.textInput.Text = gridSnapData.defaultVal.ToString(CultureInfo.InvariantCulture);
             rotationData.currentVal = rotationData.defaultVal;
-            rotationData.textInput.Text = rotationData.defaultVal.ToString();
+            rotationData.textInput.Text = rotationData.defaultVal.ToString(CultureInfo.InvariantCulture);
         }
         void MakeNumber(string text)
         {
@@ -177,7 +179,7 @@ namespace BuildSettings
             else if (numCheck < data.min || numCheck > data.max)
             {
                 data.currentVal = data.defaultVal;
-                data.textInput.Text = data.defaultVal.ToString();
+                data.textInput.Text = data.defaultVal.ToString(CultureInfo.InvariantCulture);
             }
             else
             {

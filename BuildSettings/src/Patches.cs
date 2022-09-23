@@ -13,8 +13,16 @@ namespace BuildSettings
         [HarmonyPrefix]
         static bool Prefix()
         {
-            if (Settings.noAdaptation && !Settings.noAdaptOverride) return false;
-            return true;
+            return Settings.noAdaptation && !Settings.noAdaptOverride ? false : true;
+        }
+    }
+
+    [HarmonyPatch(typeof(AdaptModule), "UpdateAdaptation")]
+    class FixCucumber
+    {
+        static bool Prefix()
+        {
+            return Settings.noAdaptation && !Settings.noAdaptOverride ? false : true;
         }
     }
 
@@ -110,6 +118,8 @@ namespace BuildSettings
         }
     }
 
+
+
     // Makes it so that the outline width for parts shrinks as the camera gets closer
     // Courtesy of Infinity's RandomTweaks
     [HarmonyPatch(typeof(BuildSelector), nameof(BuildSelector.DrawRegionalOutline))]
@@ -118,6 +128,7 @@ namespace BuildSettings
         [HarmonyPrefix]
         public static void DrawRegionalOutline(List<PolygonData> polygons, bool symmetry, Color color, ref float width, float depth = 1f)
         {
+            if (Settings.windowHolder == null) return;
             float cameraDistance = BuildManager.main.buildCamera.CameraDistance;
             float newWidth = (width * (cameraDistance * 0.12f));
             width = Math.Min(newWidth, 0.1f);

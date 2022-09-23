@@ -29,25 +29,25 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="0Harmony">
-      <HintPath>..\..\..\..\..\..\mnt\Games\SteamLibrary\steamapps\common\Spaceflight Simulator\Spaceflight Simulator Game\Spaceflight Simulator_Data\Managed\0Harmony.dll</HintPath>
+      <HintPath>..\References\0Harmony.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp">
-      <HintPath>..\..\..\..\..\..\mnt\Games\SteamLibrary\steamapps\common\Spaceflight Simulator\Spaceflight Simulator Game\Spaceflight Simulator_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <HintPath>..\References\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
-      <HintPath>..\..\..\..\..\..\mnt\Games\SteamLibrary\steamapps\common\Spaceflight Simulator\Spaceflight Simulator Game\Spaceflight Simulator_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+      <HintPath>..\References\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine">
-      <HintPath>..\..\..\..\..\..\mnt\Games\SteamLibrary\steamapps\common\Spaceflight Simulator\Spaceflight Simulator Game\Spaceflight Simulator_Data\Managed\UnityEngine.dll</HintPath>
+      <HintPath>..\References\UnityEngine.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.IMGUIModule">
-      <HintPath>..\..\..\..\..\..\mnt\Games\SteamLibrary\steamapps\common\Spaceflight Simulator\Spaceflight Simulator Game\Spaceflight Simulator_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
+      <HintPath>..\References\UnityEngine.IMGUIModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.TextRenderingModule">
-      <HintPath>..\..\..\..\..\..\mnt\Games\SteamLibrary\steamapps\common\Spaceflight Simulator\Spaceflight Simulator Game\Spaceflight Simulator_Data\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
+      <HintPath>..\References\UnityEngine.TextRenderingModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UI">
-      <HintPath>..\..\..\..\..\..\mnt\Games\SteamLibrary\steamapps\common\Spaceflight Simulator\Spaceflight Simulator Game\Spaceflight Simulator_Data\Managed\UnityEngine.UI.dll</HintPath>
+      <HintPath>..\References\UnityEngine.UI.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -57,6 +57,7 @@
     <Compile Include="src\Patches.cs" />
     <Compile Include="src\MethodReplacements.cs" />
     <Compile Include="src\CustomKeybinds.cs" />
+    <Compile Include="src\SkinUnlocker.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="src\" />
