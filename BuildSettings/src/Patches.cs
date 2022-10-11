@@ -104,15 +104,24 @@ namespace BuildSettings
     [HarmonyPatch(typeof(BuildMenus), nameof(BuildMenus.Rotate))]
     public class CustomRotation
     {
+        public static bool CustomListener;
+
         static void Prefix (ref float rotation)
         {
+            if (CustomListener)
+            {
+                CustomListener = false;
+                Debug.Log("Listener Heard: " + rotation.ToString());
+                return;
+            }
+
             if (rotation < 0)
             {
-                rotation = -(float)Settings.rotationData.currentVal;
+                rotation = Settings.GetRotationValue(!Settings.invertKeys, true);
             }
             else
             {
-                rotation = (float)Settings.rotationData.currentVal;
+                rotation = Settings.GetRotationValue(!Settings.invertKeys);
             }
 
         }

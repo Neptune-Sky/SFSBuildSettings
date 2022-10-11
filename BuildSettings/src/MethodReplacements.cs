@@ -14,6 +14,7 @@ namespace BuildSettings
     {
         public static Vector2 MyGetSnapPosition(Vector2 position, HoldGrid hold_grid)
         {
+            if (Settings.windowHolder == null) return new Vector2();
             hold_grid.holdGrid.transform.position = position;
             ConvexPolygon[] buildColliders = hold_grid.buildGrid.buildColliders.Select((BuildGrid.PartCollider a) => a.colliders).Collapse().ToArray();
             MagnetModule[] modules = hold_grid.holdGrid.partsHolder.GetModules<MagnetModule>();

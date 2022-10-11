@@ -1,4 +1,7 @@
-﻿using SFS.UI.ModGUI;
+﻿using HarmonyLib;
+using SFS.Builds;
+using SFS.UI;
+using SFS.UI.ModGUI;
 using System.Globalization;
 using UnityEngine;
 using UnityEngine.UI;
@@ -16,7 +19,7 @@ namespace BuildSettings
         public double max;
     }
 
-    public class Settings : MonoBehaviour
+    public class Settings
     {
         public static GameObject windowHolder;
         public static Vector2 gameSize;
@@ -29,26 +32,32 @@ namespace BuildSettings
 
         public static ToggleWithLabel snapToggle;
         public static ToggleWithLabel adaptToggle;
+        public static ToggleWithLabel invertKeyToggle;
         public static NumberInput gridSnapData;
         public static NumberInput rotationData;
 
         public static bool snapping;
         public static bool noAdaptation;
+        public static bool invertKeys;
         // SFS.UI.ModGUI.Space space;
 
 
         public static bool noAdaptOverride;
 
-
-        void Awake()
+        public static void Setup()
         {
-            inst = this;
             gridSnapData = CreateData(0.5, 0.0001, 99999);
             rotationData = CreateData(90, 0.0001, 99999);
 
+            ShowGUI();
+            if (minimized) Minimize(true);
+            window.gameObject.GetComponent<DraggableWindowModule>().OnDropAction += OnDragDrop;
+
+            ClampWindow(window);
+            Defaults();
         }
 
-        NumberInput CreateData(double defaultVal, double min, double max)
+        static NumberInput CreateData(double defaultVal, double min, double max)
         {
             NumberInput ToReturn = new NumberInput
             {
@@ -62,7 +71,7 @@ namespace BuildSettings
             return ToReturn;
         }
 
-        public void ShowGUI()
+        public static void ShowGUI()
         {
             windowHolder = Builder.CreateHolder(Builder.SceneToAttach.CurrentScene, "Build Settings");
             var rectTransform = windowHolder.AddComponent<RectTransform>();
@@ -71,18 +80,21 @@ namespace BuildSettings
             rectTransform.sizeDelta = Vector2.zero;
             rectTransform.position = Vector2.zero;
 
-            window = Builder.CreateWindow(windowHolder.transform, MainWindowID, 375, minimized ? 50 : 400 , 300, 400, true, true, 0.95f, "Build Settings");
+            Vector2Int windowPos = Config.data.windowPosition;
+
+            window = Builder.CreateWindow(windowHolder.transform, MainWindowID, 375, minimized ? 50 : 400, windowPos.x, windowPos.y, true, true, 0.95f, "Build Settings");
 
             // if (minimized) window.Position = new Vector2(window.Position.x, window.Position.y - 350);
 
             window.CreateLayoutGroup(Type.Vertical);
 
-            minButton = Builder.CreateButtonWithLabel(window.gameObject.transform, 40, 30, -175, -25, "", minimized ? "+" : "-", Minimize);
+            minButton = Builder.CreateButtonWithLabel(window.gameObject.transform, 40, 30, -175, -25, "", minimized ? "+" : "-", () => Minimize());
             // window.WindowColor = new Color(0.1f, 0.5f, 0.1f);
 
             Builder.CreateSpace(window, 0, 0);
             snapToggle = Builder.CreateToggleWithLabel(window, 320, 35, () => !snapping, () => snapping = !snapping, 0, 0, "Snap to Parts");
             adaptToggle = Builder.CreateToggleWithLabel(window, 320, 35, () => !noAdaptation, () => noAdaptation = !noAdaptation, 0, 0, "Part Adaptation");
+            invertKeyToggle = Builder.CreateToggleWithLabel(window, 320, 35, () => invertKeys, () => invertKeys = !invertKeys, 0, 0, "Invert Rotate Keybinds");
 
             Box box = Builder.CreateBox(window, 355, 140, 0, 0, 0.75f);
             box.CreateLayoutGroup(Type.Vertical, spacing: 10f);
@@ -103,19 +115,21 @@ namespace BuildSettings
 
             Builder.CreateButton(window, 325, 40, 0, 0, Defaults, "Defaults");
 
-            // window.gameObject.transform.localScale = new Vector3(0.8f, 0.8f, 1f);
+
+
+            window.gameObject.transform.localScale = new Vector3(Config.data.windowScale.Value, Config.data.windowScale.Value, 1f);
         }
 
-        void Minimize()
+        static void Minimize(bool setup = false)
         {
             minimized = !minimized;
 
             if (!minimized)
             {
                 window.Size = new Vector2(375, 400);
-                if (window.Position.y < gameSize.y / 3)
+                if (window.Position.y < gameSize.y / 3 && !setup)
                 {
-                    window.Position = new Vector2(window.Position.x, window.Position.y + 350);
+                    window.Position = new Vector2(window.Position.x, window.Position.y + 350 * Config.data.windowScale.Value);
                 }
                 minButton.button.Text = "-";
             }
@@ -124,30 +138,35 @@ namespace BuildSettings
                 window.Size = new Vector2(375, 50);
                 if (window.Position.y < gameSize.y / 3)
                 {
-                    window.Position = new Vector2(window.Position.x, window.Position.y - 350);
+                    window.Position = new Vector2(window.Position.x, window.Position.y - 350 * Config.data.windowScale.Value);
                 }
                 minButton.button.Text = "+";
             }
             minButton.Position = new Vector2(-175, -25);
+
+            Config.data.windowPosition = Vector2Int.RoundToInt(window.Position);
+            Config.Save();
         }
-        void Defaults()
+        static void Defaults()
         {
             snapping = false;
             noAdaptation = false;
+            invertKeys = Config.data.invertKeysByDefault;
             snapToggle.toggle.toggleButton.UpdateUI(false); 
             adaptToggle.toggle.toggleButton.UpdateUI(false);
+            invertKeyToggle.toggle.toggleButton.UpdateUI(false);
             gridSnapData.currentVal = gridSnapData.defaultVal;
             gridSnapData.textInput.Text = gridSnapData.defaultVal.ToString(CultureInfo.InvariantCulture);
             rotationData.currentVal = rotationData.defaultVal;
             rotationData.textInput.Text = rotationData.defaultVal.ToString(CultureInfo.InvariantCulture);
         }
-        void MakeNumber(string text)
+        static void MakeNumber(string text)
         {
             gridSnapData = Numberify(gridSnapData);
             rotationData = Numberify(rotationData);
         }
 
-        NumberInput Numberify(NumberInput data)
+        static NumberInput Numberify(NumberInput data)
         {
             try
             {
@@ -191,23 +210,43 @@ namespace BuildSettings
         }
 
 
-        Vector2 ClampWindow()
+        static void ClampWindow(Window input)
         {
             gameSize = new Vector2((windowHolder.GetComponentInParent<CanvasScaler>().referenceResolution.y / Screen.height) * Screen.width, windowHolder.GetComponentInParent<CanvasScaler>().referenceResolution.y);
 
-            Vector2 pos = window.Position;
-            pos.x = Mathf.Clamp(pos.x, window.Size.x / 2, gameSize.x - window.Size.x / 2);
-            pos.y = Mathf.Clamp(pos.y, window.Size.y, gameSize.y);
-            return pos;
+            Vector2 pos = input.Position;
+            pos.x = Mathf.Clamp(pos.x, (Config.data.windowScale.Value * window.Size.x) / 2, gameSize.x - (Config.data.windowScale.Value * window.Size.x) / 2);
+            pos.y = Mathf.Clamp(pos.y, window.Size.y * Config.data.windowScale.Value, gameSize.y);
+            input.Position = pos;
         }
 
 
-        void Update()
+        static void OnDragDrop()
         {
-            // gameSize = windowObj.GetComponentInParent<CanvasScaler>().referenceResolution;
             if (windowHolder == null) return;
-            window.Position = ClampWindow();
-            // gridSnapData.textInput.Size = new Vector2(Mathf.Clamp(70 + 10 * gridSnapData.textInput.Text.Length, 80, 200), 45);
+            ClampWindow(window);
+            Config.data.windowPosition = Vector2Int.RoundToInt(window.Position);
+            Config.Save();
+        }
+
+        public static float GetRotationValue(bool useCustom, bool negative = false)
+        {
+            float value = 90;
+
+            if (useCustom)
+            {
+                value = (float)rotationData.currentVal;
+            }
+
+            return negative ? -value : value;
+        }
+
+        public static void CustomRotate(bool inverse = false)
+        {
+            CustomRotation.CustomListener = true;
+
+            float amount = GetRotationValue(invertKeys, !inverse);
+            BuildManager.main.buildMenus.Rotate(amount);
         }
     }
 }

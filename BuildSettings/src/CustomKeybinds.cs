@@ -1,24 +1,47 @@
-﻿/*
-using ModLoader;
+﻿using ModLoader;
+using ModLoader.Helpers;
 using UnityEngine;
 using static SFS.Input.KeybindingsPC;
 
 namespace BuildSettings
 {
-    public class CustomKeybinds : ModKeybindings
+    public class DefaultKeys
     {
-        public class DefaultData
+        public Key[] CustomRotate = {
+            Key.Ctrl_(KeyCode.Q),
+            Key.Ctrl_(KeyCode.E)
+        };
+    }
+    public class BS_Keybindings : ModKeybindings
+    {
+        static DefaultKeys defaultKeys = new DefaultKeys();
+
+        #region Keys
+
+        Key[] CustomRotate = defaultKeys.CustomRotate;
+
+        #endregion
+
+        static BS_Keybindings main;
+
+        public static void LoadKeybindings()
         {
-            public Key test = KeyCode.A;
+            main = SetupKeybindings<BS_Keybindings>(Main.main);
+
+            SceneHelper.OnBuildSceneLoaded += OnBuildLoad;
         }
-        public static DefaultData keys = new DefaultData();
-        DefaultData defaultData = new DefaultData();
+
+        static void OnBuildLoad()
+        {
+            AddOnKeyDown(main.CustomRotate[0], () => Settings.CustomRotate(true));
+            AddOnKeyDown(main.CustomRotate[1], () => Settings.CustomRotate());
+        }
+
         public override void CreateUI()
         {
-            CreateUI_Text("Build Settings Keybinds");
-            CreateUI_Keybinding(keys.test, defaultData.test, "Test");
-
+            CreateUI_Text("Build Settings Keybindings");
+            CreateUI_Keybinding(CustomRotate, defaultKeys.CustomRotate, "Custom Rotation");
+            CreateUI_Space();
         }
     }
 }
-*/

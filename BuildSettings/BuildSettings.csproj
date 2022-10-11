@@ -58,6 +58,7 @@
     <Compile Include="src\MethodReplacements.cs" />
     <Compile Include="src\CustomKeybinds.cs" />
     <Compile Include="src\SkinUnlocker.cs" />
+    <Compile Include="src\Config.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="src\" />
