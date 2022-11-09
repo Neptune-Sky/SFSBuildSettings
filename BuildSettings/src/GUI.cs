@@ -122,10 +122,10 @@ namespace BuildSettings
 
             if (!minimized)
             {
-                window.Size = new Vector2(375, 400);
+                window.Size = new Vector2(375, 450);
                 if (window.Position.y < gameSize.y / 3 && !setup)
                 {
-                    window.Position = new Vector2(window.Position.x, window.Position.y + 350 * ModSettings<Config.SettingsData>.settings.windowScale.Value);
+                    window.Position = new Vector2(window.Position.x, window.Position.y + 400 * ModSettings<Config.SettingsData>.settings.windowScale.Value);
                 }
                 minButton.button.Text = "-";
             }
@@ -134,7 +134,7 @@ namespace BuildSettings
                 window.Size = new Vector2(375, 50);
                 if (window.Position.y < gameSize.y / 3)
                 {
-                    window.Position = new Vector2(window.Position.x, window.Position.y - 350 * ModSettings<Config.SettingsData>.settings.windowScale.Value);
+                    window.Position = new Vector2(window.Position.x, window.Position.y - 400 * ModSettings<Config.SettingsData>.settings.windowScale.Value);
                 }
                 minButton.button.Text = "+";
             }
