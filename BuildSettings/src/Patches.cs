@@ -13,7 +13,7 @@ namespace BuildSettings
         [HarmonyPrefix]
         static bool Prefix()
         {
-            return Settings.noAdaptation && !Settings.noAdaptOverride ? false : true;
+            return GUI.noAdaptation && !GUI.noAdaptOverride ? false : true;
         }
     }
 
@@ -22,7 +22,7 @@ namespace BuildSettings
     {
         static bool Prefix()
         {
-            return Settings.noAdaptation && !Settings.noAdaptOverride ? false : true;
+            return GUI.noAdaptation && !GUI.noAdaptOverride ? false : true;
         }
     }
 
@@ -32,13 +32,13 @@ namespace BuildSettings
         [HarmonyPrefix]
         static void Prefix()
         {
-            Settings.noAdaptOverride = true;
+            GUI.noAdaptOverride = true;
         }
 
         [HarmonyPostfix]
         static void Postfix()
         {
-            Settings.noAdaptOverride = false;
+            GUI.noAdaptOverride = false;
         }
     }
 
@@ -48,7 +48,7 @@ namespace BuildSettings
         [HarmonyPrefix]
         static bool Prefix(MagnetModule A, MagnetModule B, float snapDistance, ref List<Vector2> __result)
         {
-            if (Settings.snapping)
+            if (GUI.snapping)
             {
                 __result = new List<Vector2>();
                 return false;
@@ -117,11 +117,11 @@ namespace BuildSettings
 
             if (rotation < 0)
             {
-                rotation = Settings.GetRotationValue(!Settings.invertKeys, true);
+                rotation = GUI.GetRotationValue(!GUI.invertKeys, true);
             }
             else
             {
-                rotation = Settings.GetRotationValue(!Settings.invertKeys);
+                rotation = GUI.GetRotationValue(!GUI.invertKeys);
             }
 
         }
@@ -137,20 +137,10 @@ namespace BuildSettings
         [HarmonyPrefix]
         public static void DrawRegionalOutline(List<PolygonData> polygons, bool symmetry, Color color, ref float width, float depth = 1f)
         {
-            if (Settings.windowHolder == null) return;
+            if (GUI.windowHolder == null) return;
             float cameraDistance = BuildManager.main.buildCamera.CameraDistance;
             float newWidth = (width * (cameraDistance * 0.12f));
             width = Math.Min(newWidth, 0.1f);
-        }
-    }
-    [HarmonyPatch(typeof(BuildManager), "Awake")]
-    public static class PatchZoomLimits
-    {
-        [HarmonyPrefix]
-        public static void Prefix(ref BuildManager __instance)
-        {
-            __instance.buildCamera.maxCameraDistance = 300;
-            __instance.buildCamera.minCameraDistance = 0.1f;
         }
     }
 }

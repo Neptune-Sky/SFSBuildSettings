@@ -33,8 +33,8 @@ namespace BuildSettings
 
         static void OnBuildLoad()
         {
-            AddOnKeyDown(main.CustomRotate[0], () => Settings.CustomRotate(true));
-            AddOnKeyDown(main.CustomRotate[1], () => Settings.CustomRotate());
+            AddOnKeyDown(main.CustomRotate[0], () => GUI.CustomRotate(true));
+            AddOnKeyDown(main.CustomRotate[1], () => GUI.CustomRotate());
         }
 
         public override void CreateUI()

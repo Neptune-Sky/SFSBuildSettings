@@ -1,8 +1,7 @@
-﻿using HarmonyLib;
+﻿using System.Globalization;
 using SFS.Builds;
-using SFS.UI;
 using SFS.UI.ModGUI;
-using System.Globalization;
+using UITools;
 using UnityEngine;
 using UnityEngine.UI;
 using Type = SFS.UI.ModGUI.Type;
@@ -19,11 +18,11 @@ namespace BuildSettings
         public double max;
     }
 
-    public class Settings
+    public class GUI
     {
         public static GameObject windowHolder;
         public static Vector2 gameSize;
-        public static Settings inst;
+        public static GUI inst;
 
         static readonly int MainWindowID = Builder.GetRandomID();
         static Window window;
@@ -51,10 +50,13 @@ namespace BuildSettings
 
             ShowGUI();
             if (minimized) Minimize(true);
-            window.gameObject.GetComponent<DraggableWindowModule>().OnDropAction += OnDragDrop;
-
+            window.RegisterOnDropListener(OnDragDrop);
             ClampWindow(window);
             Defaults();
+            ModSettings<Config.SettingsData>.settings.windowScale.OnChange += Scale;
+
+            BuildManager.main.buildCamera.maxCameraDistance = 300;
+            BuildManager.main.buildCamera.minCameraDistance = 0.1f;
         }
 
         static NumberInput CreateData(double defaultVal, double min, double max)
@@ -73,16 +75,12 @@ namespace BuildSettings
 
         public static void ShowGUI()
         {
+
             windowHolder = Builder.CreateHolder(Builder.SceneToAttach.CurrentScene, "Build Settings");
-            var rectTransform = windowHolder.AddComponent<RectTransform>();
-            rectTransform.anchorMin = Vector2.zero;
-            rectTransform.anchorMax = Vector2.zero;
-            rectTransform.sizeDelta = Vector2.zero;
-            rectTransform.position = Vector2.zero;
 
-            Vector2Int windowPos = Config.data.windowPosition;
+            window = Builder.CreateWindow(windowHolder.transform, MainWindowID, 375, minimized ? 50 : 400, (int)(gameSize.x / 2) - 500, (int)(gameSize.y / 2) - 300, true, false, 0.95f, "Build Settings");
 
-            window = Builder.CreateWindow(windowHolder.transform, MainWindowID, 375, minimized ? 50 : 400, windowPos.x, windowPos.y, true, true, 0.95f, "Build Settings");
+            window.RegisterPermanentSaving("BuildSettings.windowPosition");
 
             // if (minimized) window.Position = new Vector2(window.Position.x, window.Position.y - 350);
 
@@ -117,7 +115,7 @@ namespace BuildSettings
 
 
 
-            window.gameObject.transform.localScale = new Vector3(Config.data.windowScale.Value, Config.data.windowScale.Value, 1f);
+            window.gameObject.transform.localScale = new Vector3(ModSettings<Config.SettingsData>.settings.windowScale.Value, ModSettings<Config.SettingsData>.settings.windowScale.Value, 1f);
         }
 
         static void Minimize(bool setup = false)
@@ -129,7 +127,7 @@ namespace BuildSettings
                 window.Size = new Vector2(375, 400);
                 if (window.Position.y < gameSize.y / 3 && !setup)
                 {
-                    window.Position = new Vector2(window.Position.x, window.Position.y + 350 * Config.data.windowScale.Value);
+                    window.Position = new Vector2(window.Position.x, window.Position.y + 350 * ModSettings<Config.SettingsData>.settings.windowScale.Value);
                 }
                 minButton.button.Text = "-";
             }
@@ -138,21 +136,18 @@ namespace BuildSettings
                 window.Size = new Vector2(375, 50);
                 if (window.Position.y < gameSize.y / 3)
                 {
-                    window.Position = new Vector2(window.Position.x, window.Position.y - 350 * Config.data.windowScale.Value);
+                    window.Position = new Vector2(window.Position.x, window.Position.y - 350 * ModSettings<Config.SettingsData>.settings.windowScale.Value);
                 }
                 minButton.button.Text = "+";
             }
             minButton.Position = new Vector2(-175, -25);
-
-            Config.data.windowPosition = Vector2Int.RoundToInt(window.Position);
-            Config.Save();
         }
         static void Defaults()
         {
             snapping = false;
             noAdaptation = false;
-            invertKeys = Config.data.invertKeysByDefault;
-            snapToggle.toggle.toggleButton.UpdateUI(false); 
+            invertKeys = ModSettings<Config.SettingsData>.settings.invertKeysByDefault;
+            snapToggle.toggle.toggleButton.UpdateUI(false);
             adaptToggle.toggle.toggleButton.UpdateUI(false);
             invertKeyToggle.toggle.toggleButton.UpdateUI(false);
             gridSnapData.currentVal = gridSnapData.defaultVal;
@@ -164,6 +159,12 @@ namespace BuildSettings
         {
             gridSnapData = Numberify(gridSnapData);
             rotationData = Numberify(rotationData);
+        }
+
+        static void Scale()
+        {
+            window.gameObject.transform.localScale = new Vector3(ModSettings<Config.SettingsData>.settings.windowScale.Value, ModSettings<Config.SettingsData>.settings.windowScale.Value, 1f);
+            ClampWindow(window);
         }
 
         static NumberInput Numberify(NumberInput data)
@@ -215,8 +216,8 @@ namespace BuildSettings
             gameSize = new Vector2((windowHolder.GetComponentInParent<CanvasScaler>().referenceResolution.y / Screen.height) * Screen.width, windowHolder.GetComponentInParent<CanvasScaler>().referenceResolution.y);
 
             Vector2 pos = input.Position;
-            pos.x = Mathf.Clamp(pos.x, (Config.data.windowScale.Value * window.Size.x) / 2, gameSize.x - (Config.data.windowScale.Value * window.Size.x) / 2);
-            pos.y = Mathf.Clamp(pos.y, window.Size.y * Config.data.windowScale.Value, gameSize.y);
+            pos.x = Mathf.Clamp(pos.x, -(gameSize.x / 2) + ((ModSettings<Config.SettingsData>.settings.windowScale.Value * window.Size.x) / 2), gameSize.x / 2 - (ModSettings<Config.SettingsData>.settings.windowScale.Value * window.Size.x) / 2);
+            pos.y = Mathf.Clamp(pos.y, -(gameSize.y / 2) + (window.Size.y * ModSettings<Config.SettingsData>.settings.windowScale.Value), gameSize.y / 2);
             input.Position = pos;
         }
 
@@ -225,8 +226,6 @@ namespace BuildSettings
         {
             if (windowHolder == null) return;
             ClampWindow(window);
-            Config.data.windowPosition = Vector2Int.RoundToInt(window.Position);
-            Config.Save();
         }
 
         public static float GetRotationValue(bool useCustom, bool negative = false)

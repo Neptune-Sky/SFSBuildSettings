@@ -1,12 +1,9 @@
-﻿using SFS.Builds;
+﻿using System.Collections.Generic;
+using System.Linq;
+using SFS.Builds;
 using SFS.Parts;
 using SFS.Parts.Modules;
-using SFS.UI;
 using SFS.World;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
 using UnityEngine;
 namespace BuildSettings
 {
@@ -14,7 +11,7 @@ namespace BuildSettings
     {
         public static Vector2 MyGetSnapPosition(Vector2 position, HoldGrid hold_grid)
         {
-            if (Settings.windowHolder == null) return new Vector2();
+            if (GUI.windowHolder == null) return new Vector2();
             hold_grid.holdGrid.transform.position = position;
             ConvexPolygon[] buildColliders = hold_grid.buildGrid.buildColliders.Select((BuildGrid.PartCollider a) => a.colliders).Collapse().ToArray();
             MagnetModule[] modules = hold_grid.holdGrid.partsHolder.GetModules<MagnetModule>();
@@ -46,15 +43,15 @@ namespace BuildSettings
             }
             if (SandboxSettings.main.settings.partClipping)
             {
-                return position.Round((float)Settings.gridSnapData.currentVal);
+                return position.Round((float)GUI.gridSnapData.currentVal);
             }
             List<Vector2> obj = new List<Vector2>
             {
-                position.Round((float)Settings.gridSnapData.currentVal),
-                (position + Vector2.left * 0.4f).Round((float)Settings.gridSnapData.currentVal),
-                (position + Vector2.right * 0.4f).Round((float)Settings.gridSnapData.currentVal),
-                (position + Vector2.up * 0.4f).Round((float)Settings.gridSnapData.currentVal),
-                (position + Vector2.down * 0.4f).Round((float)Settings.gridSnapData.currentVal)
+                position.Round((float)GUI.gridSnapData.currentVal),
+                (position + Vector2.left * 0.4f).Round((float)GUI.gridSnapData.currentVal),
+                (position + Vector2.right * 0.4f).Round((float)GUI.gridSnapData.currentVal),
+                (position + Vector2.up * 0.4f).Round((float)GUI.gridSnapData.currentVal),
+                (position + Vector2.down * 0.4f).Round((float)GUI.gridSnapData.currentVal)
             };
             Vector2 result = position;
             float num2 = float.PositiveInfinity;
@@ -70,7 +67,7 @@ namespace BuildSettings
             {
                 return result;
             }
-            return position.Round((float)Settings.gridSnapData.currentVal);
+            return position.Round((float)GUI.gridSnapData.currentVal);
         }
     }
 }
