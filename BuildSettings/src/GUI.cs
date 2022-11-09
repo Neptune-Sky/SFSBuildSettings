@@ -78,7 +78,7 @@ namespace BuildSettings
 
             windowHolder = Builder.CreateHolder(Builder.SceneToAttach.CurrentScene, "Build Settings");
 
-            window = Builder.CreateWindow(windowHolder.transform, MainWindowID, 375, minimized ? 50 : 400, (int)(gameSize.x / 2) - 500, (int)(gameSize.y / 2) - 300, true, false, 0.95f, "Build Settings");
+            window = Builder.CreateWindow(windowHolder.transform, MainWindowID, 375, minimized ? 50 : 450, (int)(gameSize.x / 2) - 500, (int)(gameSize.y / 2) - 300, true, false, 0.95f, "Build Settings");
 
             window.RegisterPermanentSaving("BuildSettings.windowPosition");
 
