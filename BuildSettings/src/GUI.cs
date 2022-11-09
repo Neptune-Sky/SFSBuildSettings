@@ -113,8 +113,6 @@ namespace BuildSettings
 
             Builder.CreateButton(window, 325, 40, 0, 0, Defaults, "Defaults");
 
-
-
             window.gameObject.transform.localScale = new Vector3(ModSettings<Config.SettingsData>.settings.windowScale.Value, ModSettings<Config.SettingsData>.settings.windowScale.Value, 1f);
         }
 
