@@ -63,7 +63,6 @@
     <Compile Include="src\Main.cs" />
     <Compile Include="src\GUI.cs" />
     <Compile Include="src\Patches.cs" />
-    <Compile Include="src\MethodReplacements.cs" />
     <Compile Include="src\CustomKeybinds.cs" />
     <Compile Include="src\SkinUnlocker.cs" />
     <Compile Include="src\Config.cs" />

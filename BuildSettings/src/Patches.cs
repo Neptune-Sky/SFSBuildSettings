@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Reflection.Emit;
 using HarmonyLib;
 using SFS.Builds;
 using SFS.Parts.Modules;
@@ -58,45 +61,26 @@ namespace BuildSettings
         }
     }
 
-    public class Classes
-    {
-        public static HoldGrid ThisHoldGrid;
-
-        public static BuildGrid ThisBuildGrid;
-    }
-
     [HarmonyPatch(typeof(HoldGrid), "GetSnapPosition_Old")]
-    public class HoldGrid_GetSnapPosition_Old
+    static class CustomGridSnap
     {
-        [HarmonyPrefix]
-        public static bool Prefix(Vector2 position, out Vector2 __state)
+        public static float GetSnap()
         {
-            __state = position;
-            return true;
+            return GUI.gridSnapData != null ? (float)GUI.gridSnapData.currentVal : 0.5f;
         }
-        [HarmonyPostfix]
-        public static void Postfix(ref Vector2 __result, Vector2 __state)
+        static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
         {
-            __result = MethodReplacements.MyGetSnapPosition(__state, Classes.ThisHoldGrid);
-        }
-    }
+            var codes = new List<CodeInstruction>(instructions);
 
-    [HarmonyPatch(typeof(HoldGrid), "Start")]
-    public class HoldGrid_Start
-    {
-        [HarmonyPrefix]
-        public static void Prefix(ref HoldGrid __instance)
-        {
-            Classes.ThisHoldGrid = __instance;
-        }
-    }
-    [HarmonyPatch(typeof(BuildGrid), "Start")]
-    public class BuildGrid_Start
-    {
-        [HarmonyPrefix]
-        public static void Prefix(ref BuildGrid __instance)
-        {
-            Classes.ThisBuildGrid = __instance;
+            for (int i = 0; i < codes.Count; i++)
+            {
+                if (codes[i].opcode == OpCodes.Ldc_R4 && codes[i].OperandIs(0.5f))
+                {
+                    codes[i] = new CodeInstruction(OpCodes.Call, typeof(CustomGridSnap).GetMethod("GetSnap", BindingFlags.Static | BindingFlags.Public));
+                }
+            }
+
+            return codes.AsEnumerable();
         }
     }
 
@@ -108,10 +92,11 @@ namespace BuildSettings
 
         static void Prefix (ref float rotation)
         {
+
             if (CustomListener)
             {
                 CustomListener = false;
-                Debug.Log("Listener Heard: " + rotation.ToString());
+                // Debug.Log("Listener Heard: " + rotation.ToString());
                 return;
             }
 
