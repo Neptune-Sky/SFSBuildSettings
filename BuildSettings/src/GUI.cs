@@ -45,8 +45,8 @@ namespace BuildSettings
 
         public static void Setup()
         {
-            gridSnapData = CreateData(0.5, 0.0001, 99999);
-            rotationData = CreateData(90, 0.0001, 99999);
+            gridSnapData = CreateData(0.5, 0.000000000000000000001, 99999);
+            rotationData = CreateData(90, 0.000000000000000000001, 99999);
 
             ShowGUI();
             if (minimized) Minimize(true);
@@ -183,7 +183,7 @@ namespace BuildSettings
             }
 
 
-            if (data.textInput.Text.Length > 5)
+            if (data.textInput.Text.Length > 20)
             {
                 data.textInput.Text = data.oldText;
             }
@@ -201,7 +201,7 @@ namespace BuildSettings
             }
             else
             {
-                data.currentVal = numCheck.Round(0.00001);
+                data.currentVal = numCheck.Round(0.000000000000000000001);
             }
 
             data.oldText = data.textInput.Text;
