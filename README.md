@@ -11,11 +11,10 @@ Current features are:
 - Toggles for part snapping and adaptation
 - Grid snap interval changer
 - Rotation amount changer
+- Keybinds for moving/resizing selected parts
 - Unhide all hidden skins
 - Shrink part outlines as you zoom in
 - Greatly increased limits for zoom-in and zoom-out
-
-This is an early version of the mod, and more will be released very soon. Stay tuned.
 
 ![UI](https://github.com/Neptune-Sky/SFSBuildSettings/blob/main/Images/UI.png?raw=true)
 
