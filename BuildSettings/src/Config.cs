@@ -5,6 +5,7 @@ using SFS.Variables;
 using TMPro;
 using UITools;
 using UnityEngine;
+using static SFS.UI.ModGUI.Builder;
 using Type = SFS.UI.ModGUI.Type;
 
 namespace BuildSettings
@@ -27,27 +28,37 @@ namespace BuildSettings
         public class SettingsData
         {
             public Float_Local windowScale = new Float_Local { Value = 0.8f };
+            public float smallMove = 0.1f;
+            public float smallResize = 0.1f;
             public bool invertKeysByDefault;
+            public bool modifierIsToggle;
         }
 
         public static GameObject MenuItems(Transform parent, Vector2Int size)
         { 
-            Box box = Builder.CreateBox(parent, size.x, size.y);
+            Box box = CreateBox(parent, size.x, size.y);
             box.CreateLayoutGroup(Type.Vertical, TextAnchor.UpperCenter, 35, new RectOffset(15, 15, 15, 15));
             int width = size.x - 60;
+            CreateLabel(box, size.x, 50, text: "Build Settings");
 
-            Builder.CreateLabel(box, size.x, 50, text: "Build Settings");
-
-            Container scale = Builder.CreateContainer(box);
+            Container scale = CreateContainer(box);
             scale.CreateLayoutGroup(Type.Horizontal, spacing: 0);
 
-            Label label = Builder.CreateLabel(scale, width - 225, 32, text: "Window Scale");
+            Label label = CreateLabel(scale, width - 225, 32, text: "Window Scale");
             label.gameObject.GetComponent<TextMeshProUGUI>().alignment = TextAlignmentOptions.MidlineLeft;
-            Builder.CreateSlider(scale, 225, settings.windowScale.Value, (0.5f, 1.5f), false, (val) => settings.windowScale.Value = val, (val) => val.ToPercentString());
-
-            Builder.CreateSeparator(box, width - 20);
-
-            Builder.CreateToggleWithLabel(box, width, 32, () => settings.invertKeysByDefault, () => settings.invertKeysByDefault = !settings.invertKeysByDefault, labelText: "Invert Keybinds by Default");
+            CreateSlider(scale, 225, settings.windowScale.Value, (0.5f, 1.5f), false, (val) => settings.windowScale.Value = val, (val) => val.ToPercentString());
+            CreateSeparator(box, width - 20);
+            CreateToggleWithLabel(box, width, 32, () => settings.invertKeysByDefault, () => settings.invertKeysByDefault = !settings.invertKeysByDefault, labelText: "Invert Keybinds by Default");
+            CreateSeparator(box, width - 20);
+            CreateToggleWithLabel(box, width, 32, () => settings.modifierIsToggle, () => 
+            { 
+                settings.modifierIsToggle = !settings.modifierIsToggle;
+                if (settings.modifierIsToggle == false)
+                {
+                    PartModifiers.modifierToggle = false;
+                }
+            }, 
+                labelText: "Modifier Key is Toggle");
             return box.gameObject;
         }
 

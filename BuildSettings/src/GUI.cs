@@ -4,6 +4,7 @@ using SFS.UI.ModGUI;
 using UITools;
 using UnityEngine;
 using UnityEngine.UI;
+using static SFS.UI.ModGUI.Builder;
 using Type = SFS.UI.ModGUI.Type;
 
 namespace BuildSettings
@@ -24,7 +25,7 @@ namespace BuildSettings
         public static Vector2 gameSize;
         public static GUI inst;
 
-        static readonly int MainWindowID = Builder.GetRandomID();
+        static readonly int MainWindowID = GetRandomID();
         static Window window;
         static bool minimized;
         static ButtonWithLabel minButton;
@@ -76,9 +77,9 @@ namespace BuildSettings
         public static void ShowGUI()
         {
 
-            windowHolder = Builder.CreateHolder(Builder.SceneToAttach.CurrentScene, "Build Settings");
+            windowHolder = CreateHolder(SceneToAttach.CurrentScene, "Build Settings");
 
-            window = Builder.CreateWindow(windowHolder.transform, MainWindowID, 375, minimized ? 50 : 450, (int)(gameSize.x / 2) - 500, (int)(gameSize.y / 2) - 300, true, false, 0.95f, "Build Settings");
+            window = CreateWindow(windowHolder.transform, MainWindowID, 375, minimized ? 50 : 450, (int)(gameSize.x / 2) - 500, (int)(gameSize.y / 2) - 300, true, false, 0.95f, "Build Settings");
 
             window.RegisterPermanentSaving("BuildSettings.windowPosition");
 
@@ -86,32 +87,28 @@ namespace BuildSettings
 
             window.CreateLayoutGroup(Type.Vertical);
 
-            minButton = Builder.CreateButtonWithLabel(window.gameObject.transform, 40, 30, -175, -25, "", minimized ? "+" : "-", () => Minimize());
-            // window.WindowColor = new Color(0.1f, 0.5f, 0.1f);
+            minButton = CreateButtonWithLabel(window.gameObject.transform, 40, 30, -175, -25, "", minimized ? "+" : "-", () => Minimize());
+            CreateSpace(window, 0, 0);
+            snapToggle = CreateToggleWithLabel(window, 320, 35, () => !snapping, () => snapping = !snapping, 0, 0, "Snap to Parts");
+            adaptToggle = CreateToggleWithLabel(window, 320, 35, () => !noAdaptation, () => noAdaptation = !noAdaptation, 0, 0, "Part Adaptation");
+            invertKeyToggle = CreateToggleWithLabel(window, 320, 35, () => invertKeys, () => invertKeys = !invertKeys, 0, 0, "Invert Rotate Keybinds");
 
-            Builder.CreateSpace(window, 0, 0);
-            snapToggle = Builder.CreateToggleWithLabel(window, 320, 35, () => !snapping, () => snapping = !snapping, 0, 0, "Snap to Parts");
-            adaptToggle = Builder.CreateToggleWithLabel(window, 320, 35, () => !noAdaptation, () => noAdaptation = !noAdaptation, 0, 0, "Part Adaptation");
-            invertKeyToggle = Builder.CreateToggleWithLabel(window, 320, 35, () => invertKeys, () => invertKeys = !invertKeys, 0, 0, "Invert Rotate Keybinds");
-
-            Box box = Builder.CreateBox(window, 355, 140, 0, 0, 0.75f);
+            Box box = CreateBox(window, 355, 140, 0, 0, 0.75f);
             box.CreateLayoutGroup(Type.Vertical, spacing: 10f);
 
-            Container gridSnapContainer = Builder.CreateContainer(box);
+            Container gridSnapContainer = CreateContainer(box);
             gridSnapContainer.CreateLayoutGroup(Type.Horizontal, spacing: 10f);
 
-            var gridLabel = Builder.CreateLabel(gridSnapContainer, 200, 35, 0, 0, "Grid Snap");
-            Builder.CreateSpace(gridSnapContainer, 20, 0);
-            gridSnapData.textInput = Builder.CreateTextInput(gridSnapContainer, 90, 50, 0, 0, gridSnapData.defaultVal.ToString(CultureInfo.InvariantCulture), MakeNumber);
+            var gridLabel = CreateLabel(gridSnapContainer, 200, 35, 0, 0, "Grid Snap");
+            CreateSpace(gridSnapContainer, 20, 0);
+            gridSnapData.textInput = CreateTextInput(gridSnapContainer, 90, 50, 0, 0, gridSnapData.defaultVal.ToString(CultureInfo.InvariantCulture), MakeNumber);
 
-            Container rotationContainer = Builder.CreateContainer(box);
+            Container rotationContainer = CreateContainer(box);
             rotationContainer.CreateLayoutGroup(Type.Horizontal, spacing: 10f);
-
-            Builder.CreateLabel(rotationContainer, 200, 35, 0, 0, "Rotation Degrees");
-            Builder.CreateSpace(rotationContainer, 20, 0);
-            rotationData.textInput = Builder.CreateTextInput(rotationContainer, 90, 50, 0, 0, rotationData.defaultVal.ToString(CultureInfo.InvariantCulture), MakeNumber);
-
-            Builder.CreateButton(window, 325, 40, 0, 0, Defaults, "Defaults");
+            CreateLabel(rotationContainer, 200, 35, 0, 0, "Rotation Degrees");
+            CreateSpace(rotationContainer, 20, 0);
+            rotationData.textInput = CreateTextInput(rotationContainer, 90, 50, 0, 0, rotationData.defaultVal.ToString(CultureInfo.InvariantCulture), MakeNumber);
+            CreateButton(window, 325, 40, 0, 0, Defaults, "Defaults");
 
             window.gameObject.transform.localScale = new Vector3(ModSettings<Config.SettingsData>.settings.windowScale.Value, ModSettings<Config.SettingsData>.settings.windowScale.Value, 1f);
         }
@@ -134,8 +131,9 @@ namespace BuildSettings
                 window.Size = new Vector2(375, 50);
                 if (window.Position.y < gameSize.y / 3)
                 {
-                    window.Position = new Vector2(window.Position.x, window.Position.y - 400 * ModSettings<Config.SettingsData>.settings.windowScale.Value);
+                    window.Position = new Vector2(window.Position.x, window.Position.y - (400 * ModSettings<Config.SettingsData>.settings.windowScale.Value));
                 }
+
                 minButton.button.Text = "+";
             }
             minButton.Position = new Vector2(-175, -25);
@@ -144,7 +142,7 @@ namespace BuildSettings
         {
             snapping = false;
             noAdaptation = false;
-            invertKeys = ModSettings<Config.SettingsData>.settings.invertKeysByDefault;
+            invertKeys = Config.settings.invertKeysByDefault;
             snapToggle.toggle.toggleButton.UpdateUI(false);
             adaptToggle.toggle.toggleButton.UpdateUI(false);
             invertKeyToggle.toggle.toggleButton.UpdateUI(false);
@@ -174,9 +172,7 @@ namespace BuildSettings
             catch
             {
                 if (data.textInput.Text == "." || data.textInput.Text == "")
-                {
                     return data;
-                }
 
                 data.textInput.Text = data.oldText;
                 return data;
@@ -191,18 +187,14 @@ namespace BuildSettings
             double numCheck = double.Parse(data.textInput.Text, CultureInfo.InvariantCulture);
 
             if (numCheck == 0)
-            {
                 data.currentVal = data.defaultVal;
-            }
             else if (numCheck < data.min || numCheck > data.max)
             {
                 data.currentVal = data.defaultVal;
                 data.textInput.Text = data.defaultVal.ToString(CultureInfo.InvariantCulture);
             }
             else
-            {
                 data.currentVal = numCheck.Round(0.000000000000000000001);
-            }
 
             data.oldText = data.textInput.Text;
             return data;
@@ -211,10 +203,10 @@ namespace BuildSettings
 
         static void ClampWindow(Window input)
         {
-            gameSize = new Vector2((windowHolder.GetComponentInParent<CanvasScaler>().referenceResolution.y / Screen.height) * Screen.width, windowHolder.GetComponentInParent<CanvasScaler>().referenceResolution.y);
+            gameSize = new Vector2(windowHolder.GetComponentInParent<CanvasScaler>().referenceResolution.y / Screen.height * Screen.width, windowHolder.GetComponentInParent<CanvasScaler>().referenceResolution.y);
 
             Vector2 pos = input.Position;
-            pos.x = Mathf.Clamp(pos.x, -(gameSize.x / 2) + ((ModSettings<Config.SettingsData>.settings.windowScale.Value * window.Size.x) / 2), gameSize.x / 2 - (ModSettings<Config.SettingsData>.settings.windowScale.Value * window.Size.x) / 2);
+            pos.x = Mathf.Clamp(pos.x, -(gameSize.x / 2) + (ModSettings<Config.SettingsData>.settings.windowScale.Value * window.Size.x / 2), (gameSize.x / 2) - (ModSettings<Config.SettingsData>.settings.windowScale.Value * window.Size.x / 2));
             pos.y = Mathf.Clamp(pos.y, -(gameSize.y / 2) + (window.Size.y * ModSettings<Config.SettingsData>.settings.windowScale.Value), gameSize.y / 2);
             input.Position = pos;
         }
@@ -231,9 +223,7 @@ namespace BuildSettings
             float value = 90;
 
             if (useCustom)
-            {
                 value = (float)rotationData.currentVal;
-            }
 
             return negative ? -value : value;
         }

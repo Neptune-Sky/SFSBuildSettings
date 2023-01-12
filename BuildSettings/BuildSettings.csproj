@@ -57,6 +57,9 @@
     <Reference Include="Unity.TextMeshPro">
       <HintPath>..\References\Unity.TextMeshPro.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.InputLegacyModule">
+      <HintPath>..\References\UnityEngine.InputLegacyModule.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -66,6 +69,8 @@
     <Compile Include="src\CustomKeybinds.cs" />
     <Compile Include="src\SkinUnlocker.cs" />
     <Compile Include="src\Config.cs" />
+    <Compile Include="src\PartModifiers.cs" />
+    <Compile Include="src\SetValues.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="src\" />
