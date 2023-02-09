@@ -150,6 +150,8 @@ namespace BuildSettings
             gridSnapData.textInput.Text = gridSnapData.defaultVal.ToString(CultureInfo.InvariantCulture);
             rotationData.currentVal = rotationData.defaultVal;
             rotationData.textInput.Text = rotationData.defaultVal.ToString(CultureInfo.InvariantCulture);
+            PartModifiers.modifierToggle = false;
+            PartModifiers.orientationToggle = false;
         }
         static void MakeNumber(string text)
         {

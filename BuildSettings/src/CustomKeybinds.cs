@@ -36,10 +36,11 @@ namespace BuildSettings
             Key.Ctrl_(KeyCode.RightArrow)
         };
         public Key Modifier = KeyCode.LeftShift;
+        public Key OrientationMode = KeyCode.LeftAlt;
         public Key[] ChangeValues =
         {
-            KeyCode.Comma,
-            KeyCode.Period
+            KeyCode.M,
+            KeyCode.Comma
         };
     }
     public class BS_Keybindings : ModKeybindings
@@ -53,6 +54,7 @@ namespace BuildSettings
         public Key[] ChangeHeight = defaultKeys.ChangeHeight;
         public Key[] ChangeWidth = defaultKeys.ChangeWidth;
         public Key Modifier = defaultKeys.Modifier;
+        public Key OrientationMode = defaultKeys.OrientationMode;
         public Key[] ChangeValues = defaultKeys.ChangeValues;
         public Key ToggleInfiniteArea = defaultKeys.ToggleInfiniteArea;
         public Key TogglePartClipping = defaultKeys.TogglePartClipping;
@@ -97,6 +99,16 @@ namespace BuildSettings
                 }
             });
 
+            AddOnKeyDown_Build(main.OrientationMode, () =>
+            {
+                if (Config.settings.orientationIsToggle)
+                {
+                    orientationToggle = !orientationToggle;
+                    SoundPlayer.main.clickSound.Play();
+                    MsgDrawer.main.Log("Orientation Mode: " + orientationToggle.ToString());
+                }
+            });
+
             AddOnKeyDown_Build(main.ToggleInfiniteArea, () => 
             { 
                 Traverse.Create(SandboxSettings.main).Method("ToggleInfiniteBuildArea").GetValue();
@@ -122,6 +134,8 @@ namespace BuildSettings
             CreateUI_Keybinding(ChangeHeight, defaultKeys.ChangeHeight, "Change Selected Part Heights");
             CreateUI_Space();
             CreateUI_Keybinding(Modifier, defaultKeys.Modifier, "Small Increment Modifier");
+            CreateUI_Keybinding(OrientationMode, defaultKeys.OrientationMode, "Orientation Mode");
+            CreateUI_Space();
             CreateUI_Keybinding(ChangeValues, defaultKeys.ChangeValues, "Change Small Move/Resize Increment");
             CreateUI_Space();
             CreateUI_Keybinding(ToggleInfiniteArea, defaultKeys.ToggleInfiniteArea, "Toggle Infinite Build Area");

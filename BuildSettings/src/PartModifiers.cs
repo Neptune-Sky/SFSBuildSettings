@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using HarmonyLib;
 using SFS.Builds;
 using SFS.Parts;
+using SFS.Parts.Modules;
 using UnityEngine;
 
 namespace BuildSettings
@@ -9,6 +12,7 @@ namespace BuildSettings
     public class PartModifiers 
     {
         public static bool modifierToggle;
+        public static bool orientationToggle;
 
         public enum PartMoveDirection
         {
@@ -119,6 +123,29 @@ namespace BuildSettings
 
         static void ResizeParts(Vector3 resizeAmount, Part[] parts)
         {
+            bool orientationMode = (Input.GetKey(BS_Keybindings.main.OrientationMode.key) && !Config.settings.orientationIsToggle) || orientationToggle;
+
+            if (orientationMode)
+            {
+                List<OrientationModule> orientationModules = new List<OrientationModule>();
+                foreach (Part part in parts)
+                {
+                    orientationModules.Add(part.orientation);
+                }
+
+                Undo.main.RecordStatChangeStep(orientationModules, () =>
+                {
+                    for (int i = 0; i < parts.Length; i++)
+                    {
+                        Orientation orientation = parts[i].orientation.orientation;
+                        orientation.x += resizeAmount.x;
+                        orientation.y += resizeAmount.y;
+                        parts[i].orientation.ApplyOrientation();
+                    }
+                });
+                return;
+            }
+
             Undo.main.RecordStatChangeStep(parts, () =>
             {
                 for (int i = 0; i < parts.Length; i++)

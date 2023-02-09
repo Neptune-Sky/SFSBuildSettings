@@ -30,11 +30,13 @@ namespace BuildSettings
             public Float_Local windowScale = new Float_Local { Value = 0.8f };
             public float smallMove = 0.1f;
             public float smallResize = 0.1f;
+
             public bool invertKeysByDefault;
             public bool modifierIsToggle;
+            public bool orientationIsToggle;
         }
 
-        public static GameObject MenuItems(Transform parent, Vector2Int size)
+        static GameObject MenuItems(Transform parent, Vector2Int size)
         { 
             Box box = CreateBox(parent, size.x, size.y);
             box.CreateLayoutGroup(Type.Vertical, TextAnchor.UpperCenter, 35, new RectOffset(15, 15, 15, 15));
@@ -59,6 +61,16 @@ namespace BuildSettings
                 }
             }, 
                 labelText: "Modifier Key is Toggle");
+            CreateSeparator(box, width - 20);
+            CreateToggleWithLabel(box, width, 32, () => settings.orientationIsToggle, () =>
+            {
+                settings.orientationIsToggle = !settings.orientationIsToggle;
+                if (settings.orientationIsToggle == false)
+                {
+                    PartModifiers.orientationToggle = false;
+                }
+            },
+                labelText: "Orientation Key is Toggle");
             return box.gameObject;
         }
 
