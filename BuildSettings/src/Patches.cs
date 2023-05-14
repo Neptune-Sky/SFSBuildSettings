@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using HarmonyLib;
+using JetBrains.Annotations;
 using SFS.Builds;
 using SFS.Parts;
 using SFS.Parts.Modules;
@@ -12,50 +13,47 @@ using UnityEngine;
 namespace BuildSettings
 {
     [HarmonyPatch(typeof(PartGrid), "UpdateAdaptation")]
-    class StopAdaptation
+    internal class StopAdaptation
     {
-        static bool Prefix() => !GUI.noAdaptation || GUI.noAdaptOverride;
+        private static bool Prefix() => !GUI.noAdaptation || GUI.noAdaptOverride;
     }
 
     [HarmonyPatch(typeof(AdaptModule), "UpdateAdaptation")]
-    class FixCucumber
+    internal class FixCucumber
     {
-        static bool Prefix() => !GUI.noAdaptation || GUI.noAdaptOverride;
+        private static bool Prefix() => !GUI.noAdaptation || GUI.noAdaptOverride;
     }
 
     [HarmonyPatch(typeof(HoldGrid), "TakePart_PickGrid")]
-    class AdaptPartPicker
+    internal class AdaptPartPicker
     {
-        static void Prefix() => GUI.noAdaptOverride = true;
-        static void Postfix() => GUI.noAdaptOverride = false;
+        private static void Prefix() => GUI.noAdaptOverride = true;
+        private static void Postfix() => GUI.noAdaptOverride = false;
     }
 
     [HarmonyPatch(typeof(MagnetModule), nameof(MagnetModule.GetAllSnapOffsets))]
-    class KillMagnet
+    internal class KillMagnet
     {
         [HarmonyPrefix]
-        static bool Prefix(MagnetModule A, MagnetModule B, float snapDistance, ref List<Vector2> __result)
+        private static bool Prefix(MagnetModule A, MagnetModule B, float snapDistance, ref List<Vector2> __result)
         {
-            if (GUI.snapping)
-            {
-                __result = new List<Vector2>();
-                return false;
-            }
+            if (!GUI.snapping) return true;
+            __result = new List<Vector2>();
+            return false;
 
-            return true;
         }
     }
 
     [HarmonyPatch(typeof(HoldGrid), "GetSnapPosition_Old")]
-    static class CustomGridSnap
+    internal static class CustomGridSnap
     {
         public static float GetSnap() => GUI.gridSnapData != null ? (float)GUI.gridSnapData.currentVal : 0.5f;
 
-        static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+        private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
         {
-            List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
+            var codes = new List<CodeInstruction>(instructions);
 
-            for (int i = 0; i < codes.Count; i++)
+            for (var i = 0; i < codes.Count; i++)
             {
                 if (codes[i].opcode == OpCodes.Ldc_R4 && codes[i].OperandIs(0.5f))
                     codes[i] = new CodeInstruction(OpCodes.Call, typeof(CustomGridSnap).GetMethod("GetSnap", BindingFlags.Static | BindingFlags.Public));
@@ -66,13 +64,13 @@ namespace BuildSettings
     }
 
     [HarmonyPatch(typeof(Part_Utility), nameof(Part_Utility.OffsetPartPosition))]
-    static class OffsetPartsRoundToGridSnap
+    internal static class OffsetPartsRoundToGridSnap
     {
-        static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+        private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
         {
-            List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
+            var codes = new List<CodeInstruction>(instructions);
 
-            for (int i = 0; i < codes.Count; i++)
+            for (var i = 0; i < codes.Count; i++)
             {
                 if (codes[i].opcode == OpCodes.Ldc_R4 && codes[i].OperandIs(0.5f))
                 {
@@ -85,13 +83,12 @@ namespace BuildSettings
     }
 
     [HarmonyPatch(typeof(BuildMenus), nameof(BuildMenus.Rotate))]
-    public class CustomRotation
+    public static class CustomRotation
     {
         public static bool CustomListener;
 
-        static void Prefix (ref float rotation)
+        private static void Prefix (ref float rotation)
         {
-
             if (CustomListener)
             {
                 CustomListener = false;
@@ -99,15 +96,7 @@ namespace BuildSettings
                 return;
             }
 
-            if (rotation < 0)
-            {
-                rotation = GUI.GetRotationValue(!GUI.invertKeys, true);
-            }
-            else
-            {
-                rotation = GUI.GetRotationValue(!GUI.invertKeys);
-            }
-
+            rotation = rotation < 0 ? GUI.GetRotationValue(!GUI.invertKeys, true) : GUI.GetRotationValue(!GUI.invertKeys);
         }
     }
 
@@ -118,6 +107,7 @@ namespace BuildSettings
     public static class SetOutlineWidth
     {
         [HarmonyPrefix]
+        [UsedImplicitly]
         public static void DrawRegionalOutline(List<PolygonData> polygons, bool symmetry, Color color, ref float width, float depth = 1f)
         {
             if (GUI.windowHolder == null) return;

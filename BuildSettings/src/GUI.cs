@@ -1,11 +1,12 @@
 ﻿using System.Globalization;
+using JetBrains.Annotations;
 using SFS.Builds;
 using SFS.UI.ModGUI;
 using UITools;
 using UnityEngine;
 using UnityEngine.UI;
 using static SFS.UI.ModGUI.Builder;
-using Type = SFS.UI.ModGUI.Type;
+using GUIElement = SFS.UI.ModGUI.GUIElement;
 
 namespace BuildSettings
 {
@@ -19,22 +20,23 @@ namespace BuildSettings
         public double max;
     }
 
+    [UsedImplicitly]
     public class GUI
     {
         public static GameObject windowHolder;
-        public static Vector2 gameSize;
+        private static Vector2 gameSize;
         public static GUI inst;
 
-        static readonly int MainWindowID = GetRandomID();
-        static Window window;
-        static bool minimized;
-        static ButtonWithLabel minButton;
+        private static readonly int MainWindowID = GetRandomID();
+        private static Window window;
+        private static bool minimized;
+        private static ButtonWithLabel minButton;
 
-        public static ToggleWithLabel snapToggle;
-        public static ToggleWithLabel adaptToggle;
-        public static ToggleWithLabel invertKeyToggle;
+        private static ToggleWithLabel snapToggle;
+        private static ToggleWithLabel adaptToggle;
+        private static ToggleWithLabel invertKeyToggle;
         public static NumberInput gridSnapData;
-        public static NumberInput rotationData;
+        private static NumberInput rotationData;
 
         public static bool snapping;
         public static bool noAdaptation;
@@ -60,9 +62,9 @@ namespace BuildSettings
             BuildManager.main.buildCamera.minCameraDistance = 0.1f;
         }
 
-        static NumberInput CreateData(double defaultVal, double min, double max)
+        private static NumberInput CreateData(double defaultVal, double min, double max)
         {
-            NumberInput ToReturn = new NumberInput
+            var ToReturn = new NumberInput
             {
                 textInput = new TextInput(),
                 oldText = defaultVal.ToString(CultureInfo.InvariantCulture),
@@ -74,7 +76,7 @@ namespace BuildSettings
             return ToReturn;
         }
 
-        public static void ShowGUI()
+        private static void ShowGUI()
         {
 
             windowHolder = CreateHolder(SceneToAttach.CurrentScene, "Build Settings");
@@ -99,7 +101,7 @@ namespace BuildSettings
             Container gridSnapContainer = CreateContainer(box);
             gridSnapContainer.CreateLayoutGroup(Type.Horizontal, spacing: 10f);
 
-            var gridLabel = CreateLabel(gridSnapContainer, 200, 35, 0, 0, "Grid Snap");
+            CreateLabel(gridSnapContainer, 200, 35, 0, 0, "Grid Snap");
             CreateSpace(gridSnapContainer, 20, 0);
             gridSnapData.textInput = CreateTextInput(gridSnapContainer, 90, 50, 0, 0, gridSnapData.defaultVal.ToString(CultureInfo.InvariantCulture), MakeNumber);
 
@@ -113,7 +115,7 @@ namespace BuildSettings
             window.gameObject.transform.localScale = new Vector3(ModSettings<Config.SettingsData>.settings.windowScale.Value, ModSettings<Config.SettingsData>.settings.windowScale.Value, 1f);
         }
 
-        static void Minimize(bool setup = false)
+        private static void Minimize(bool setup = false)
         {
             minimized = !minimized;
 
@@ -138,7 +140,8 @@ namespace BuildSettings
             }
             minButton.Position = new Vector2(-175, -25);
         }
-        static void Defaults()
+
+        private static void Defaults()
         {
             snapping = false;
             noAdaptation = false;
@@ -153,19 +156,20 @@ namespace BuildSettings
             PartModifiers.modifierToggle = false;
             PartModifiers.orientationToggle = false;
         }
-        static void MakeNumber(string text)
+
+        private static void MakeNumber(string text)
         {
             gridSnapData = Numberify(gridSnapData);
             rotationData = Numberify(rotationData);
         }
 
-        static void Scale()
+        private static void Scale()
         {
             window.gameObject.transform.localScale = new Vector3(ModSettings<Config.SettingsData>.settings.windowScale.Value, ModSettings<Config.SettingsData>.settings.windowScale.Value, 1f);
             ClampWindow(window);
         }
 
-        static NumberInput Numberify(NumberInput data)
+        private static NumberInput Numberify(NumberInput data)
         {
             try
             {
@@ -173,7 +177,7 @@ namespace BuildSettings
             }
             catch
             {
-                if (data.textInput.Text == "." || data.textInput.Text == "")
+                if (data.textInput.Text is "." or "")
                     return data;
 
                 data.textInput.Text = data.oldText;
@@ -203,7 +207,7 @@ namespace BuildSettings
         }
 
 
-        static void ClampWindow(Window input)
+        private static void ClampWindow(GUIElement input)
         {
             gameSize = new Vector2(windowHolder.GetComponentInParent<CanvasScaler>().referenceResolution.y / Screen.height * Screen.width, windowHolder.GetComponentInParent<CanvasScaler>().referenceResolution.y);
 
@@ -214,7 +218,7 @@ namespace BuildSettings
         }
 
 
-        static void OnDragDrop()
+        private static void OnDragDrop()
         {
             if (windowHolder == null) return;
             ClampWindow(window);

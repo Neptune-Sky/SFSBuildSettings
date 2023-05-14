@@ -7,7 +7,7 @@ using SFS.UI;
 
 namespace BuildSettings
 {
-    public class SetValues
+    public static class SetValues
     {
         public static void SetSmallMove()
         {
@@ -28,7 +28,7 @@ namespace BuildSettings
                     MsgDrawer.main.Log("Could not parse value, the new move value will not be set");
                     return;
                 }
-                MsgDrawer.main.Log("Small move set to " + new_value.ToString());
+                MsgDrawer.main.Log("Small move set to " + new_value);
             }
         }
         public static void SetSmallResize()
@@ -50,7 +50,7 @@ namespace BuildSettings
                     MsgDrawer.main.Log("Could not parse value, the new resize value will not be set");
                     return;
                 }
-                MsgDrawer.main.Log("Small resize set to " + new_value.ToString());
+                MsgDrawer.main.Log("Small resize set to " + new_value);
             }
         }
     }

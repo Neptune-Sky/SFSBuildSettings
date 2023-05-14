@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using HarmonyLib;
+using JetBrains.Annotations;
 using ModLoader;
 using ModLoader.Helpers;
 using SFS.IO;
@@ -8,6 +9,7 @@ using UITools;
 
 namespace BuildSettings
 {
+    [UsedImplicitly]
     public class Main : Mod, IUpdatable
     {
         public override string ModNameID => "BuildSettings";
@@ -22,7 +24,7 @@ namespace BuildSettings
         public Dictionary<string, FilePath> UpdatableFiles => new() { { "https://github.com/Neptune-Sky/SFSBuildSettings/releases/latest/download/BuildSettings.dll", new FolderPath(ModFolder).ExtendToFile("BuildSettings.dll") } };
 
         public static GUI settings;
-        public static Harmony patcher;
+        private static Harmony patcher;
 
         public static Main main;
         public static FolderPath modFolder;
