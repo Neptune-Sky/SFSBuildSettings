@@ -47,8 +47,7 @@ namespace BuildSettings
             Container scale = CreateContainer(box);
             scale.CreateLayoutGroup(Type.Horizontal, spacing: 0);
 
-            Label label = CreateLabel(scale, width - 225, 32, text: "Window Scale");
-            label.gameObject.GetComponent<TextMeshProUGUI>().alignment = TextAlignmentOptions.MidlineLeft;
+            CreateLabel(scale, width - 225, 32, text: "Window Scale").TextAlignment = TextAlignmentOptions.MidlineLeft;
             CreateSlider(scale, 225, settings.windowScale.Value, (0.5f, 1.5f), false,
                 val => settings.windowScale.Value = val, val => val.ToPercentString());
             CreateSeparator(box, width - 20);

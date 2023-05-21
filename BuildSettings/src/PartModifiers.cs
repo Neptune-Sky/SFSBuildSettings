@@ -126,20 +126,16 @@ namespace BuildSettings
 
             if (orientationMode)
             {
-                var orientationModules = new List<OrientationModule>();
-                foreach (Part part in parts)
-                {
-                    orientationModules.Add(part.orientation);
-                }
+                var orientationModules = parts.Select(part => part.orientation).ToList();
 
                 Undo.main.RecordStatChangeStep(orientationModules, () =>
                 {
-                    for (var i = 0; i < parts.Length; i++)
+                    foreach (Part part in parts)
                     {
-                        Orientation orientation = parts[i].orientation.orientation;
+                        Orientation orientation = part.orientation.orientation;
                         orientation.x += resizeAmount.x;
                         orientation.y += resizeAmount.y;
-                        parts[i].orientation.ApplyOrientation();
+                        part.orientation.ApplyOrientation();
                     }
                 });
                 return;
@@ -147,49 +143,48 @@ namespace BuildSettings
 
             Undo.main.RecordStatChangeStep(parts, () =>
             {
-                for (var i = 0; i < parts.Length; i++)
+                foreach (Part part in parts)
                 {
-                    if (parts[i].variablesModule.doubleVariables.Has("size"))
+                    if (part.variablesModule.doubleVariables.Has("size"))
                     {
-                        double size = parts[i].variablesModule.doubleVariables.GetValue("size");
+                        double size = part.variablesModule.doubleVariables.GetValue("size");
                         double newSize = size + resizeAmount.x;
                         if (newSize <= 0.00001 && resizeAmount.x < 0) continue;
-                        parts[i].variablesModule.doubleVariables.SetValue("size", newSize);
+                        part.variablesModule.doubleVariables.SetValue("size", newSize);
                         continue;
                     }
 
-                    double height = parts[i].variablesModule.doubleVariables.GetValue("height");
+                    double height = part.variablesModule.doubleVariables.GetValue("height");
                     double newHeight = height + resizeAmount.y;
-                    parts[i].variablesModule.doubleVariables.SetValue("height", newHeight);
+                    part.variablesModule.doubleVariables.SetValue("height", newHeight);
 
-                    if (parts[i].variablesModule.doubleVariables.Has("width"))
+                    if (part.variablesModule.doubleVariables.Has("width"))
                     {
-                        double width = parts[i].variablesModule.doubleVariables.GetValue("width");
-                        parts[i].variablesModule.doubleVariables.SetValue("width", width + resizeAmount.x);
+                        double width = part.variablesModule.doubleVariables.GetValue("width");
+                        part.variablesModule.doubleVariables.SetValue("width", width + resizeAmount.x);
 
-                        if (parts[i].variablesModule.doubleVariables.Has("width_b")) continue;
+                        if (part.variablesModule.doubleVariables.Has("width_b")) continue;
 
-                        if (parts[i].variablesModule.doubleVariables.Has("width_original"))
+                        if (part.variablesModule.doubleVariables.Has("width_original"))
                         {
-                            double width_original2 = parts[i].variablesModule.doubleVariables.GetValue("width_original");
-                            parts[i].variablesModule.doubleVariables.SetValue("width_original", width_original2 + resizeAmount.x);
+                            double width_original2 = part.variablesModule.doubleVariables.GetValue("width_original");
+                            part.variablesModule.doubleVariables.SetValue("width_original", width_original2 + resizeAmount.x);
                             continue;
                         }
                     }
 
-                    double width_original = parts[i].variablesModule.doubleVariables.GetValue("width_original");
-                    double width_upper = parts[i].variablesModule.doubleVariables.GetValue("width_a");
-                    double width_lower = parts[i].variablesModule.doubleVariables.GetValue("width_b");
+                    double width_original = part.variablesModule.doubleVariables.GetValue("width_original");
+                    double width_upper = part.variablesModule.doubleVariables.GetValue("width_a");
+                    double width_lower = part.variablesModule.doubleVariables.GetValue("width_b");
 
                     double newWidthUpper = width_upper + resizeAmount.x;
                     double newWidthLower = width_lower + resizeAmount.x;
                     // Loosely preserve the final size if the sizes are not equal
                     double newWidthOriginal = Math.Min(newWidthUpper, newWidthLower);
 
-                    parts[i].variablesModule.doubleVariables.SetValue("width_original", newWidthOriginal);
-                    parts[i].variablesModule.doubleVariables.SetValue("width_a", newWidthUpper);
-                    parts[i].variablesModule.doubleVariables.SetValue("width_b", newWidthLower);
-
+                    part.variablesModule.doubleVariables.SetValue("width_original", newWidthOriginal);
+                    part.variablesModule.doubleVariables.SetValue("width_a", newWidthUpper);
+                    part.variablesModule.doubleVariables.SetValue("width_b", newWidthLower);
                 }
             });
 

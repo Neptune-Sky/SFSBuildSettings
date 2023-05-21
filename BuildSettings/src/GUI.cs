@@ -6,6 +6,7 @@ using UITools;
 using UnityEngine;
 using UnityEngine.UI;
 using static SFS.UI.ModGUI.Builder;
+using static UITools.ModSettings<BuildSettings.Config.SettingsData>;
 using GUIElement = SFS.UI.ModGUI.GUIElement;
 
 namespace BuildSettings
@@ -56,7 +57,7 @@ namespace BuildSettings
             window.RegisterOnDropListener(OnDragDrop);
             ClampWindow(window);
             Defaults();
-            ModSettings<Config.SettingsData>.settings.windowScale.OnChange += Scale;
+            settings.windowScale.OnChange += Scale;
 
             BuildManager.main.buildCamera.maxCameraDistance = 300;
             BuildManager.main.buildCamera.minCameraDistance = 0.1f;
@@ -112,7 +113,7 @@ namespace BuildSettings
             rotationData.textInput = CreateTextInput(rotationContainer, 90, 50, 0, 0, rotationData.defaultVal.ToString(CultureInfo.InvariantCulture), MakeNumber);
             CreateButton(window, 325, 40, 0, 0, Defaults, "Defaults");
 
-            window.gameObject.transform.localScale = new Vector3(ModSettings<Config.SettingsData>.settings.windowScale.Value, ModSettings<Config.SettingsData>.settings.windowScale.Value, 1f);
+            window.gameObject.transform.localScale = new Vector3(settings.windowScale.Value, settings.windowScale.Value, 1f);
         }
 
         private static void Minimize(bool setup = false)
@@ -124,7 +125,7 @@ namespace BuildSettings
                 window.Size = new Vector2(375, 450);
                 if (window.Position.y < gameSize.y / 3 && !setup)
                 {
-                    window.Position = new Vector2(window.Position.x, window.Position.y + 400 * ModSettings<Config.SettingsData>.settings.windowScale.Value);
+                    window.Position = new Vector2(window.Position.x, window.Position.y + 400 * settings.windowScale.Value);
                 }
                 minButton.button.Text = "-";
             }
@@ -133,7 +134,7 @@ namespace BuildSettings
                 window.Size = new Vector2(375, 50);
                 if (window.Position.y < gameSize.y / 3)
                 {
-                    window.Position = new Vector2(window.Position.x, window.Position.y - (400 * ModSettings<Config.SettingsData>.settings.windowScale.Value));
+                    window.Position = new Vector2(window.Position.x, window.Position.y - (400 * settings.windowScale.Value));
                 }
 
                 minButton.button.Text = "+";
@@ -165,15 +166,16 @@ namespace BuildSettings
 
         private static void Scale()
         {
-            window.gameObject.transform.localScale = new Vector3(ModSettings<Config.SettingsData>.settings.windowScale.Value, ModSettings<Config.SettingsData>.settings.windowScale.Value, 1f);
+            window.gameObject.transform.localScale = new Vector3(settings.windowScale.Value, settings.windowScale.Value, 1f);
             ClampWindow(window);
         }
 
         private static NumberInput Numberify(NumberInput data)
         {
+            double numCheck;
             try
             {
-                double.Parse(data.textInput.Text, CultureInfo.InvariantCulture);
+                numCheck = double.Parse(data.textInput.Text, CultureInfo.InvariantCulture);
             }
             catch
             {
@@ -189,8 +191,6 @@ namespace BuildSettings
             {
                 data.textInput.Text = data.oldText;
             }
-
-            double numCheck = double.Parse(data.textInput.Text, CultureInfo.InvariantCulture);
 
             if (numCheck == 0)
                 data.currentVal = data.defaultVal;
@@ -212,8 +212,8 @@ namespace BuildSettings
             gameSize = new Vector2(windowHolder.GetComponentInParent<CanvasScaler>().referenceResolution.y / Screen.height * Screen.width, windowHolder.GetComponentInParent<CanvasScaler>().referenceResolution.y);
 
             Vector2 pos = input.Position;
-            pos.x = Mathf.Clamp(pos.x, -(gameSize.x / 2) + (ModSettings<Config.SettingsData>.settings.windowScale.Value * window.Size.x / 2), (gameSize.x / 2) - (ModSettings<Config.SettingsData>.settings.windowScale.Value * window.Size.x / 2));
-            pos.y = Mathf.Clamp(pos.y, -(gameSize.y / 2) + (window.Size.y * ModSettings<Config.SettingsData>.settings.windowScale.Value), gameSize.y / 2);
+            pos.x = Mathf.Clamp(pos.x, -(gameSize.x / 2) + (settings.windowScale.Value * window.Size.x / 2), (gameSize.x / 2) - (settings.windowScale.Value * window.Size.x / 2));
+            pos.y = Mathf.Clamp(pos.y, -(gameSize.y / 2) + (window.Size.y * settings.windowScale.Value), gameSize.y / 2);
             input.Position = pos;
         }
 
