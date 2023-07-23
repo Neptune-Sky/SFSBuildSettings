@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using ModLoader;
 using ModLoader.Helpers;
+using SFS;
 using SFS.Audio;
 using SFS.UI;
 using SFS.World;
@@ -80,6 +81,11 @@ namespace BuildSettings
             });
             AddOnKeyDown_Build(main.ToggleInfiniteArea, () =>
             {
+                if (!Base.worldBase.AllowsCheats)
+                {
+                    SoundPlayer.main.denySound.Play();
+                    return;
+                }
                 Traverse.Create(SandboxSettings.main).Method("ToggleInfiniteBuildArea").GetValue();
                 SoundPlayer.main.clickSound.Play();
                 MsgDrawer.main.Log("Infinite Build Area: " +
@@ -87,6 +93,11 @@ namespace BuildSettings
             });
             AddOnKeyDown_Build(main.TogglePartClipping, () =>
             {
+                if (!Base.worldBase.AllowsCheats)
+                {
+                    SoundPlayer.main.denySound.Play();
+                    return;
+                }
                 Traverse.Create(SandboxSettings.main).Method("TogglePartClipping").GetValue();
                 SoundPlayer.main.clickSound.Play();
                 MsgDrawer.main.Log("Part Clipping: " + SandboxSettings.main.settings.partClipping);
