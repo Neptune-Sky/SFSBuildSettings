@@ -36,20 +36,17 @@
     <Reference Include="Assembly-CSharp">
       <HintPath>..\References\Assembly-CSharp.dll</HintPath>
     </Reference>
+    <Reference Include="UITools">
+      <HintPath>..\Dependencies\UITools.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>..\References\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine">
       <HintPath>..\References\UnityEngine.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEngine.IMGUIModule">
-      <HintPath>..\References\UnityEngine.IMGUIModule.dll</HintPath>
-    </Reference>
     <Reference Include="UnityEngine.UI">
       <HintPath>..\References\UnityEngine.UI.dll</HintPath>
-    </Reference>
-    <Reference Include="UITools">
-      <HintPath>..\..\..\..\..\..\mnt\GamesSSD\SteamLibrary\steamapps\common\Spaceflight Simulator\Spaceflight Simulator Game\Mods\UITools\UITools.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.TextRenderingModule">
       <HintPath>..\References\UnityEngine.TextRenderingModule.dll</HintPath>

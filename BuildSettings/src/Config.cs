@@ -35,6 +35,7 @@ namespace BuildSettings
             public bool invertKeysByDefault;
             public bool modifierIsToggle;
             public bool orientationIsToggle;
+            public bool unhideHiddenSkins = true;
         }
 
         private static GameObject MenuItems(Transform parent, Vector2Int size)
@@ -50,6 +51,14 @@ namespace BuildSettings
             CreateLabel(scale, width - 225, 32, text: "Window Scale").TextAlignment = TextAlignmentOptions.MidlineLeft;
             CreateSlider(scale, 225, settings.windowScale.Value, (0.5f, 1.5f), false,
                 val => settings.windowScale.Value = val, val => val.ToPercentString());
+            CreateSeparator(box, width - 20);
+            CreateToggleWithLabel(box, width, 32, () => settings.unhideHiddenSkins, () =>
+                {
+                    settings.unhideHiddenSkins = !settings.unhideHiddenSkins;
+                    if (settings.unhideHiddenSkins) SkinUnlocker.UnlockSkins();
+                    else SkinUnlocker.LockSkins();
+                },
+                labelText: "Unhide All Hidden Skins");
             CreateSeparator(box, width - 20);
             CreateToggleWithLabel(box, width, 32, () => settings.invertKeysByDefault,
                 () => settings.invertKeysByDefault = !settings.invertKeysByDefault,
