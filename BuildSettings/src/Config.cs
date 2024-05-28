@@ -55,8 +55,9 @@ namespace BuildSettings
             CreateToggleWithLabel(box, width, 32, () => settings.unhideHiddenSkins, () =>
                 {
                     settings.unhideHiddenSkins = !settings.unhideHiddenSkins;
-                    if (settings.unhideHiddenSkins) SkinUnlocker.UnlockSkins();
-                    else SkinUnlocker.LockSkins();
+                    if (!SkinUnlocker.Initialized) return;
+                    if (settings.unhideHiddenSkins) {SkinUnlocker.UnlockSkins(); return;}
+                    SkinUnlocker.LockSkins();
                 },
                 labelText: "Unhide All Hidden Skins");
             CreateSeparator(box, width - 20);

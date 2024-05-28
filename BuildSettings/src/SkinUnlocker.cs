@@ -6,15 +6,17 @@ namespace BuildSettings
 {
     public static class SkinUnlocker
     {
+        public static bool Initialized;
         private static readonly Dictionary<string, string[]> defaultColors = new();
         private static readonly Dictionary<string, string[]> defaultShapes = new();
 
         public static void Initialize()
         {
-            if (defaultColors.Count != 0) return;
+            if (Initialized) return;
             foreach (string key in Base.partsLoader.colorTextures.Keys) defaultColors.Add(key, Base.partsLoader.colorTextures[key].tags);
             foreach (string key in Base.partsLoader.shapeTextures.Keys) defaultShapes.Add(key, Base.partsLoader.shapeTextures[key].tags);
             if (Config.settings.unhideHiddenSkins) UnlockSkins();
+            Initialized = true;
         }
         public static void UnlockSkins()
         {
