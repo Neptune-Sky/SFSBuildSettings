@@ -11,6 +11,7 @@ namespace BuildSettings
 
         public static void Initialize()
         {
+            if (defaultColors.Count != 0) return;
             foreach (string key in Base.partsLoader.colorTextures.Keys) defaultColors.Add(key, Base.partsLoader.colorTextures[key].tags);
             foreach (string key in Base.partsLoader.shapeTextures.Keys) defaultShapes.Add(key, Base.partsLoader.shapeTextures[key].tags);
             if (Config.settings.unhideHiddenSkins) UnlockSkins();
