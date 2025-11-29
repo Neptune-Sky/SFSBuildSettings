@@ -28,11 +28,16 @@ namespace BuildSettings
 
         public class SettingsData
         {
-            public Float_Local windowScale = new() { Value = 0.8f };
+            public readonly Float_Local windowScale = new() { Value = 0.8f };
             public float smallMove = 0.1f;
             public float smallResize = 0.1f;
-
+            
+            public double defaultGridSnap = 0.5;
+            public double defaultRotateDegrees = 90;
+            public bool snappingByDefault = true;
+            public bool adaptingByDefault = true;
             public bool invertKeysByDefault;
+            
             public bool modifierIsToggle;
             public bool orientationIsToggle;
             public bool unhideHiddenSkins = true;
@@ -61,21 +66,17 @@ namespace BuildSettings
                 },
                 labelText: "Unhide All Hidden Skins");
             CreateSeparator(box, width - 20);
-            CreateToggleWithLabel(box, width, 32, () => settings.invertKeysByDefault,
-                () => settings.invertKeysByDefault = !settings.invertKeysByDefault,
-                labelText: "Invert Keybinds by Default");
-            CreateSeparator(box, width - 20);
             CreateToggleWithLabel(box, width, 32, () => settings.modifierIsToggle, () =>
                 {
                     settings.modifierIsToggle = !settings.modifierIsToggle;
-                    if (settings.modifierIsToggle == false) PartModifiers.modifierToggle = false;
+                    if (!settings.modifierIsToggle) PartModifiers.modifierToggle = false;
                 },
                 labelText: "Modifier Key is Toggle");
             CreateSeparator(box, width - 20);
             CreateToggleWithLabel(box, width, 32, () => settings.orientationIsToggle, () =>
                 {
                     settings.orientationIsToggle = !settings.orientationIsToggle;
-                    if (settings.orientationIsToggle == false) PartModifiers.orientationToggle = false;
+                    if (!settings.orientationIsToggle) PartModifiers.orientationToggle = false;
                 },
                 labelText: "Orientation Key is Toggle");
             return box.gameObject;

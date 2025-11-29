@@ -15,21 +15,29 @@ namespace BuildSettings
     [HarmonyPatch(typeof(PartGrid), "UpdateAdaptation")]
     internal class StopAdaptation
     {
-        private static bool Prefix() => !GUI.noAdaptation || GUI.noAdaptOverride;
+        private static bool Prefix() => GUI.adapting || GUI.noAdaptOverride;
     }
 
     [HarmonyPatch(typeof(AdaptModule), "UpdateAdaptation")]
     internal class FixCucumber
     {
-        private static bool Prefix() => !GUI.noAdaptation || GUI.noAdaptOverride;
+        private static bool Prefix() => GUI.adapting || GUI.noAdaptOverride;
     }
 
     [HarmonyPatch(typeof(HoldGrid), "TakePart_PickGrid")]
+    internal class AdaptTakenParts
+    {
+        private static void Prefix() => GUI.noAdaptOverride = true;
+        private static void Postfix() => GUI.noAdaptOverride = false;
+    }
+
+    [HarmonyPatch(typeof(PickGridUI), "OpenCategory")]
     internal class AdaptPartPicker
     {
         private static void Prefix() => GUI.noAdaptOverride = true;
         private static void Postfix() => GUI.noAdaptOverride = false;
     }
+    
 
     [HarmonyPatch(typeof(MagnetModule), nameof(MagnetModule.GetAllSnapOffsets))]
     internal class KillMagnet
@@ -37,7 +45,7 @@ namespace BuildSettings
         [HarmonyPrefix]
         private static bool Prefix(MagnetModule A, MagnetModule B, float snapDistance, ref List<Vector2> __result)
         {
-            if (!GUI.snapping) return true;
+            if (GUI.snapping) return true;
             __result = new List<Vector2>();
             return false;
 

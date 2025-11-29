@@ -39,18 +39,17 @@ namespace BuildSettings
         public static NumberInput gridSnapData;
         private static NumberInput rotationData;
 
-        public static bool snapping;
-        public static bool noAdaptation;
+        public static bool snapping = true;
+        public static bool adapting = true;
         public static bool invertKeys;
-        // SFS.UI.ModGUI.Space space;
 
 
         public static bool noAdaptOverride;
 
         public static void Setup()
         {
-            gridSnapData = CreateData(0.5, 0.000000000000000000001, 99999);
-            rotationData = CreateData(90, 0.000000000000000000001, 99999);
+            gridSnapData = CreateData(settings.defaultGridSnap, 0.000000000000000000001, 99999);
+            rotationData = CreateData(settings.defaultRotateDegrees, 0.000000000000000000001, 99999);
 
             ShowGUI();
             if (minimized) Minimize(true);
@@ -92,8 +91,8 @@ namespace BuildSettings
 
             minButton = CreateButtonWithLabel(window.gameObject.transform, 40, 30, -175, -25, "", minimized ? "+" : "-", () => Minimize());
             CreateSpace(window, 0, 0);
-            snapToggle = CreateToggleWithLabel(window, 320, 35, () => !snapping, () => snapping = !snapping, 0, 0, "Snap to Parts");
-            adaptToggle = CreateToggleWithLabel(window, 320, 35, () => !noAdaptation, () => noAdaptation = !noAdaptation, 0, 0, "Part Adaptation");
+            snapToggle = CreateToggleWithLabel(window, 320, 35, () => snapping, () => snapping = !snapping, 0, 0, "Snap to Parts");
+            adaptToggle = CreateToggleWithLabel(window, 320, 35, () => adapting, () => adapting = !adapting, 0, 0, "Part Adaptation");
             invertKeyToggle = CreateToggleWithLabel(window, 320, 35, () => invertKeys, () => invertKeys = !invertKeys, 0, 0, "Invert Rotate Keybinds");
 
             Box box = CreateBox(window, 355, 140, 0, 0, 0.75f);
@@ -111,7 +110,12 @@ namespace BuildSettings
             CreateLabel(rotationContainer, 200, 35, 0, 0, "Rotation Degrees");
             CreateSpace(rotationContainer, 20, 0);
             rotationData.textInput = CreateTextInput(rotationContainer, 90, 50, 0, 0, rotationData.defaultVal.ToString(CultureInfo.InvariantCulture), MakeNumber);
-            CreateButton(window, 325, 40, 0, 0, Defaults, "Defaults");
+
+            Container buttonsContainer = CreateContainer(window);
+            buttonsContainer.CreateLayoutGroup(Type.Horizontal, spacing: 5f);
+            CreateButton(buttonsContainer, 140, 40, 0, 0, Defaults, "Defaults");
+            CreateButton(buttonsContainer, 90, 40, 0, 0, Save, "Save");
+            CreateButton(buttonsContainer, 90, 40, 0, 0, Reset, "Reset");
 
             window.gameObject.transform.localScale = new Vector3(settings.windowScale.Value, settings.windowScale.Value, 1f);
         }
@@ -142,11 +146,31 @@ namespace BuildSettings
             minButton.Position = new Vector2(-175, -25);
         }
 
+        private static void Reset()
+        {
+            settings.adaptingByDefault = true;
+            settings.snappingByDefault = true;
+            settings.invertKeysByDefault = false;
+            settings.defaultGridSnap = gridSnapData.defaultVal = 0.5;
+            settings.defaultRotateDegrees = rotationData.defaultVal = 90;
+            Defaults();
+        }
+
+        private static void Save()
+        {
+            settings.adaptingByDefault = adapting;
+            settings.snappingByDefault = snapping;
+            settings.invertKeysByDefault = invertKeys;
+            
+            settings.defaultGridSnap = gridSnapData.defaultVal = gridSnapData.currentVal;
+            settings.defaultRotateDegrees = rotationData.defaultVal = rotationData.currentVal;
+        }
+        
         private static void Defaults()
         {
-            snapping = false;
-            noAdaptation = false;
-            invertKeys = Config.settings.invertKeysByDefault;
+            snapping = settings.snappingByDefault;
+            adapting = settings.adaptingByDefault;
+            invertKeys = settings.invertKeysByDefault;
             snapToggle.toggle.toggleButton.UpdateUI(false);
             adaptToggle.toggle.toggleButton.UpdateUI(false);
             invertKeyToggle.toggle.toggleButton.UpdateUI(false);
