@@ -16,7 +16,8 @@ Current features are:
 - Shrink part outlines as you zoom in
 - Greatly increased limits for zoom-in and zoom-out
 
-![UI](https://github.com/Neptune-Sky/SFSBuildSettings/blob/main/Images/UI.png?raw=true)
+<img width="357" height="429" alt="image" src="https://github.com/user-attachments/assets/8a603e97-d446-4f0e-b68d-6f57cb1644af" />
+
 
 # Installation
 1. Download the latest DLL.
